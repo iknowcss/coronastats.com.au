@@ -1,0 +1,70 @@
+$c-white: #FFFFFF;
+$c-aqua-haze: #E7F1F2;
+$c-shark: #262A2C;
+$c-cape-cod: #3B4144;
+$c-sunglo: #DD6F6F;
+$c-turquoise: #27CFC5;
+
+$b-desktop-width: 800px;
+
+body {
+  font-family: Poppins, sans-serif;
+  color: $c-cape-cod;
+  font-style: normal;
+}
+
+@mixin t-h1() {
+  font-weight: bold;
+  font-size: 30px;
+  color: $c-shark;
+  line-height: 120%;
+  letter-spacing: -0.02em;
+
+  @media only screen and (min-width: $b-desktop-width) {
+    font-size: 48px;
+  }
+}
+
+@mixin t-h2() {
+  @include t-h1();
+  font-size: 28px;
+
+  @media only screen and (min-width: $b-desktop-width) {
+    font-size: 36px;
+  }
+}
+
+@mixin t-p() {
+  font-size: 18px;
+  line-height: 27px;
+  color: $c-cape-cod;
+}
+
+@mixin t-mono() {
+  font-family: Inconsolata, monospace;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 15px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $c-shark;
+}
+
+@mixin noselect() {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+@mixin button() {
+  @include t-mono();
+  @include noselect();
+  padding: 12px 24px;
+  display: inline-block;
+  border: 1px solid $c-shark;
+  background-color: $c-aqua-haze;
+  cursor: pointer;
+}

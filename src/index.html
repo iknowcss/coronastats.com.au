@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>COVID-19 Projections</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,700|Inconsolata&display=swap" rel="stylesheet">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@1.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+
+<div class="layoutWrapper">
+  <main class="mainContent">
+    <div class="pageTitle">Corona Calculator</div>
+
+    <h1>Can we forecast the number of COVID-19 cases in Australia?</h1>
+
+    <div class="graphContainer">
+      <canvas id="graph"></canvas>
+    </div>
+
+    <div class="graphLegend">
+      <div class="graphLegendConfirmedCases">
+        <div class="graphLegendConfirmedCasesBubbles">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="graphLegendText">
+          No. of<br>confirmed cases
+        </div>
+      </div>
+      <div class="graphLegendPrediction">
+        <div class="graphLegendPredictionLine">
+          <span></span>
+        </div>
+        <div class="graphLegendText">
+          Prediction
+        </div>
+      </div>
+    </div>
+
+    <hr class="hrThin">
+
+    <div id="scaleControl">
+      <div class="controlTitle">Scale</div>
+      <div class="controlContainer">
+        <div class="toggleButton">
+          <input type="radio" name="graphScale" value="linear" id="graphScaleLinear" checked>
+          <label for="graphScaleLinear">Linear</label>
+        </div>
+        <div class="toggleButton">
+          <input type="radio" name="graphScale" value="log" id="graphScaleLog">
+          <label for="graphScaleLog">Logarithmic</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="locationControl">
+      <div class="controlTitle">Location</div>
+      <div class="controlContainer"></div>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>
