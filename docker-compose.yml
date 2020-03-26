@@ -1,10 +1,11 @@
 version: "3.7"
 services:
   deployer:
-    container_name: deployer
     image: iknowcss/iknowcss-deploy:latest
     volumes:
       - .:/app
       - $HOME/.aws:/root/.aws
+    env_file:
+      - .env
     working_dir: /app
     entrypoint: tail -f /dev/null

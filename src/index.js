@@ -1,8 +1,9 @@
-import './index.scss';
 import { enrichedCollection } from './data';
 import {createElement, getCookies} from './browserUtil';
 import { linestDaily, normaliseData, filterAfterDate } from './dataUtil';
-import {buildDatasets} from "./chartUtil";
+import {buildDatasets} from './chartUtil';
+import './ga';
+import './index.scss';
 
 const DISPLAY_START_DATE = '2020-03-08';
 const DEFAULT_PREDICT_END_DATE = '2020-04-05';
