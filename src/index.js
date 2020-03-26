@@ -8,7 +8,7 @@ import './index.scss';
 const DISPLAY_START_DATE = '2020-03-08';
 const DEFAULT_PREDICT_END_DATE = '2020-04-05';
 const GRAPH_Y_MIN = 5;
-const GRAPH_Y_MAX = 10000;
+const GRAPH_Y_MAX = 12000;
 
 function calculateDoublingRate(stateData) {
   const normalData = normaliseData(stateData.rawDataset);
