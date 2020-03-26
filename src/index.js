@@ -4,7 +4,10 @@ import {createElement, getCookies} from './browserUtil';
 import { linestDaily, normaliseData, filterAfterDate } from './dataUtil';
 import {buildDatasets} from "./chartUtil";
 
+const DISPLAY_START_DATE = '2020-03-08';
 const DEFAULT_PREDICT_END_DATE = '2020-04-05';
+const GRAPH_Y_MIN = 5;
+const GRAPH_Y_MAX = 10000;
 
 function calculateDoublingRate(stateData) {
   const normalData = normaliseData(stateData.rawDataset);
@@ -30,6 +33,9 @@ const graph = new Chart(document.getElementById('graph').getContext('2d'), {
     scales: {
       xAxes: [{
         type: 'time',
+        ticks: {
+          min: new Date(`${DISPLAY_START_DATE}T00:00:00.000+11:00`)
+        },
         time: {
           stepSize: 1,
           unit: 'week',
@@ -62,46 +68,60 @@ const {
   lastYScale = 'linear'
 } = getCookies();
 
+const formatYTick = value => value.toLocaleString();
+
+const formatYTickLog = value =>
+  (Math.log(value) / Math.log(10) + 1e-9) % 1 < 1e-8
+  || (Math.log(value / 2) / Math.log(10) + 1e-9) % 1 < 1e-8
+  || (Math.log(value / 5) / Math.log(10) + 1e-9) % 1 < 1e-8
+    ? formatYTick(value)
+    : '';
+
 function chooseYScale(scale) {
-  if (scale === 'linear') {
-    document.getElementById('graphScaleLinear').checked = true;
-    delete graph.options.scales.yAxes;
-  } else if (scale === 'log') {
+  if (scale === 'log') {
     document.getElementById('graphScaleLog').checked = true;
     graph.options.scales.yAxes = [{
       type: 'logarithmic',
       ticks: {
-        callback: value =>
-          (Math.log(value) / Math.log(10) + 1e-9) % 1 < 1e-8
-            || (Math.log(value / 2) / Math.log(10) + 1e-9) % 1 < 1e-8
-            || (Math.log(value / 5) / Math.log(10) + 1e-9) % 1 < 1e-8
-            ? value.toLocaleString()
-            : ''
+        suggestedMin: GRAPH_Y_MIN,
+        suggestedMax: GRAPH_Y_MAX,
+        callback: formatYTickLog
       }
     }];
+  } else {
+    scale = 'linear';
+    document.getElementById('graphScaleLinear').checked = true;
+    graph.options.scales.yAxes = [
+      {
+        type: 'linear',
+        ticks: {
+          suggestedMin: GRAPH_Y_MIN,
+          suggestedMax: GRAPH_Y_MAX,
+          callback: formatYTick
+        }
+      }
+    ];
   }
   document.cookie = `lastYScale=${scale}`;
   graph.update();
 }
 
 function choseState(state) {
-  const stateEntry = enrichedCollection.filter(x => x.stateCode === state)[0];
-  if (stateEntry) {
-    const {
-      rawDataset,
-      predictStartDate,
-      predictEndDate = DEFAULT_PREDICT_END_DATE,
-      stateCode
-    } = stateEntry;
-    document.querySelector(`#graphLocation${stateCode}`).checked = true;
-    graph.data.datasets = buildDatasets({
-      label: '# Confirmed cases',
-      predictStartDate,
-      predictEndDate,
-    }, rawDataset);
-    graph.update();
-    document.cookie = `lastStateCode=${stateCode}`;
-  }
+  let stateEntry = enrichedCollection.filter(x => x.stateCode === state)[0] || enrichedCollection[0];
+  const {
+    rawDataset,
+    predictStartDate,
+    predictEndDate = DEFAULT_PREDICT_END_DATE,
+    stateCode
+  } = stateEntry;
+  document.querySelector(`#graphLocation${stateCode}`).checked = true;
+  graph.data.datasets = buildDatasets({
+    label: '# Confirmed cases',
+    predictStartDate,
+    predictEndDate,
+  }, rawDataset);
+  graph.update();
+  document.cookie = `lastStateCode=${stateCode}`;
 }
 
 document.getElementById('scaleControl').addEventListener('change', (event) => {
@@ -117,4 +137,4 @@ document.getElementById('locationControl').addEventListener('change', (event) =>
 });
 
 chooseYScale(lastYScale);
-choseState(lastStateCode || 'ALL');
+choseState(lastStateCode);

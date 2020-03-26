@@ -35,7 +35,7 @@ const data = {
   },
   tas: {
     rawDataset: tasCaseCount.raw,
-    predictStartDate: '2020-03-12',
+    predictStartDate: '2020-03-21',
   },
   wa: {
     rawDataset: waCaseCount.raw,
@@ -43,7 +43,7 @@ const data = {
   },
   nt: {
     rawDataset: ntCaseCount.raw,
-    predictStartDate: '2020-03-20',
+    predictStartDate: '2020-03-21',
   },
 };
 
