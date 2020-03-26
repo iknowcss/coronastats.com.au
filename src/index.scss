@@ -6,13 +6,22 @@ body {
   background-color: $c-aqua-haze;
 }
 
+ul {
+  margin: 0 0 16px 0;
+  padding: 0 0 0 16px;
+}
+
 h1 {
   @include t-h1;
-  margin: 0 0 32px 0;
+  margin: 0 0 16px 0;
 }
 h2 { @include t-h2; }
 h2 { @include t-h2; }
 p { @include t-p; }
+a {
+  color: $c-sunglo;
+  text-decoration: none;
+}
 
 @mixin sectionTitleSmall() {
   @include t-mono;
@@ -45,6 +54,10 @@ p { @include t-p; }
   @include sectionTitleSmall;
   margin-top: 42px;
   font-size: 12px;
+}
+
+.graphTitle {
+  margin-bottom: 32px;
 }
 
 .graphContainer {
@@ -135,6 +148,12 @@ p { @include t-p; }
   border-top: 1px solid $c-cape-cod;
 }
 
+.hrThick {
+  margin: 0 0 24px 0;
+  border: 0;
+  border-top: 10px solid $c-cape-cod;
+}
+
 .controlTitle {
   @include sectionTitleSmall;
 }
@@ -162,5 +181,21 @@ p { @include t-p; }
 
   input:checked + label {
     background-color: $c-white;
+  }
+}
+
+.lowerSectionContent {
+  margin-bottom: 40px;
+}
+
+.twitterLink {
+  display: inline-flex;
+  align-items: center;
+
+  &Icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin-right: 4px;
   }
 }
