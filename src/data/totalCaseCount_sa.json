@@ -20,6 +20,7 @@
     ["03-22", "06:30", "+11:00", 67],
     ["03-23", "06:30", "+11:00", 98],
     ["03-24", "15:00", "+11:00", 170],
-    ["03-25", "15:00", "+11:00", 197]
+    ["03-25", "15:00", "+11:00", 197],
+    ["03-26", "00:00", "+11:00", 235, "https://www.theguardian.com/world/live/2020/mar/26/australia-coronavirus-lockdowns-social-distancing-live-updates?page=with:block-5e7c36468f08af215f6fb6e1#block-5e7c36468f08af215f6fb6e1"]
   ]
 }
