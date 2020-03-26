@@ -6,7 +6,7 @@
   "scripts": {
     "start": "webpack-dev-server --open --mode development",
     "build": "rm -rf dist && webpack --mode production && cp -r static/* dist/",
-    "gbp": "git commit -a && npm run build && docker-compose run --entrypoint ./bin/deploy-content.sh deployer",
+    "gbp": "git commit -a && git push origin master && npm run build && docker-compose run --entrypoint ./bin/deploy-content.sh deployer",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
