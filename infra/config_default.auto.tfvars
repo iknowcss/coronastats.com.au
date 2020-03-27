@@ -1,3 +1,3 @@
 project_name = "coronastats.com.au"
-domain_name = "coronastatsau.com"
-hosted_zone = "Z060389321W4PQX5JO7L0"
+domain_name = "coronaforecast.com.au"
+hosted_zone = "Z07503161AIJ7YLDD2KQZ"
