@@ -8,42 +8,44 @@ import tasCaseCount from './totalCaseCount_tas.json';
 import waCaseCount from './totalCaseCount_wa.json';
 import ntCaseCount from './totalCaseCount_nt.json';
 
+const DEFAULT_PREDICT_START_DATE = '2020-03-24';
+
 const data = {
   aus: {
     rawDataset: ausCaseCount.raw,
-    predictStartDate: '2020-03-16',
+    predictStartDate: DEFAULT_PREDICT_START_DATE,
   },
   nsw: {
     rawDataset: nswCaseCount.raw,
-    predictStartDate: '2020-03-12',
+    predictStartDate: DEFAULT_PREDICT_START_DATE,
   },
   vic: {
     rawDataset: vicCaseCount.raw,
-    predictStartDate: '2020-03-12',
+    predictStartDate: DEFAULT_PREDICT_START_DATE,
   },
   qld: {
     rawDataset: qldCaseCount.raw,
-    predictStartDate: '2020-03-12',
+    predictStartDate: DEFAULT_PREDICT_START_DATE,
   },
   act: {
     rawDataset: actCaseCount.raw,
-    predictStartDate: '2020-03-17',
+    predictStartDate: DEFAULT_PREDICT_START_DATE,
   },
   sa: {
     rawDataset: saCaseCount.raw,
-    predictStartDate: '2020-03-18',
+    predictStartDate: DEFAULT_PREDICT_START_DATE,
   },
   tas: {
     rawDataset: tasCaseCount.raw,
-    predictStartDate: '2020-03-21',
+    predictStartDate: DEFAULT_PREDICT_START_DATE,
   },
   wa: {
     rawDataset: waCaseCount.raw,
-    predictStartDate: '2020-03-21',
+    predictStartDate: DEFAULT_PREDICT_START_DATE,
   },
   nt: {
     rawDataset: ntCaseCount.raw,
-    predictStartDate: '2020-03-21',
+    predictStartDate: DEFAULT_PREDICT_START_DATE,
   },
 };
 
