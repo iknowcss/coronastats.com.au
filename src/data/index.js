@@ -8,7 +8,7 @@ import tasCaseCount from './totalCaseCount_tas.json';
 import waCaseCount from './totalCaseCount_wa.json';
 import ntCaseCount from './totalCaseCount_nt.json';
 
-const DEFAULT_PREDICT_START_DATE = '2020-03-24';
+const DEFAULT_PREDICT_START_DATE = '2020-03-23';
 
 const data = {
   aus: {
