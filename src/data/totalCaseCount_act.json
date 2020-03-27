@@ -21,6 +21,7 @@
     ["03-23", "06:30", "+11:00", 19],
     ["03-25", "06:00", "+11:00", 39],
     ["03-25", "15:00", "+11:00", 44],
-    ["03-26", "15:00", "+11:00", 53]
+    ["03-26", "15:00", "+11:00", 53],
+    ["03-27", "12:32", "+11:00", 62, "https://www.theguardian.com/australia-news/live/2020/mar/27/coronavirus-news-australia-update-live-stage-2-3-lockdown-nsw-victoria-qld-scott-morrison-restrictions-cases-death-toll-covid-19-latest-updates?page=with:block-5e7d56988f081e5eda2379fe#block-5e7d56988f081e5eda2379fe"]
   ]
 }
