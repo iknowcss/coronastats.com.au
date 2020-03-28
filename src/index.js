@@ -1,10 +1,11 @@
-import { enrichedCollection } from './data';
+import rawData, { enrichedCollection } from './data';
 import {createElement, getCookies} from './browserUtil';
 import { linestDaily, normaliseData, filterAfterDate } from './dataUtil';
 import {buildDatasets} from './chartUtil';
 import './ga';
 import './index.scss';
 
+const MILLI_PER_DAY = 1000 * 86400;
 const DISPLAY_START_DATE = '2020-03-08';
 const DEFAULT_PREDICT_END_DATE = '2020-04-12';
 const GRAPH_Y_MIN = 5;
@@ -17,12 +18,19 @@ function calculateDoublingRate(stateData) {
   return Math.log(2) / beta;
 }
 
-function formatTime(days) {
-  const bits = [Math.floor(days)];
-  bits.push(`day${bits[0] === 1 ? '' : 's'},`);
-  bits.push(Math.round((days - bits[0]) * 24));
-  bits.push(`hour${bits[2] === 1 ? '' : 's'}`);
-  return bits.join(' ');
+function formatTimeHTML(days) {
+  const daysFlr = Math.floor(days);
+  const hoursFlr = Math.round((days - daysFlr) * 24);
+  return `${daysFlr}&nbsp;day${daysFlr === 1 ? '' : 's'}, ${hoursFlr}&nbsp;hour${hoursFlr === 1 ? '' : 's'}`;
+}
+
+function estimateEasterNumber(stateData) {
+  const normalData = normaliseData(stateData.rawDataset);
+  const sampleData = filterAfterDate(stateData.predictStartDate, normalData);
+  const { alpha, beta } = linestDaily(sampleData);
+
+  return Math.round(Math.exp(beta * (new Date('2020-04-10T15:00:00.000+11:00').getTime() / MILLI_PER_DAY) + alpha));
+
 }
 
 const graph = new Chart(document.getElementById('graph').getContext('2d'), {
@@ -84,9 +92,10 @@ function chooseYScale(scale) {
     graph.options.scales.yAxes = [{
       type: 'logarithmic',
       ticks: {
+        autoSkip: true,
         suggestedMin: GRAPH_Y_MIN,
         suggestedMax: GRAPH_Y_MAX,
-        callback: formatYTickLog
+        callback: formatYTick
       }
     }];
   } else {
@@ -139,3 +148,5 @@ document.getElementById('locationControl').addEventListener('change', (event) =>
 
 chooseYScale(lastYScale);
 choseState(lastStateCode);
+document.getElementById('doublingRateDisplay').innerHTML = formatTimeHTML(calculateDoublingRate(rawData.aus));
+document.getElementById('easterPredictionDisplay').innerText = estimateEasterNumber(rawData.aus).toLocaleString();

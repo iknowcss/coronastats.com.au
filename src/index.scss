@@ -161,13 +161,22 @@ a {
   align-items: center;
   justify-content: flex-start;
   margin-bottom: 8px;
+  flex-wrap: wrap;
+
+  @media only screen and (min-width: $b-desktop-width) {
+    flex-wrap: nowrap;
+  }
 }
 
 .controlTitle {
   @include sectionTitleSmall;
 
-  width: 10em;
-  margin-bottom: 16px;
+  width: 100%;
+
+  @media only screen and (min-width: $b-desktop-width) {
+    width: 10em;
+    margin-bottom: 16px;
+  }
 }
 
 .controlContainer {
@@ -196,18 +205,32 @@ a {
 }
 
 .overallStats {
-  width: 50%;
+  &Row {
+    width: 100%;
+    margin-bottom: 24px;
+
+    @media only screen and (min-width: $b-desktop-width) {
+      width: calc(50% - 8px);
+    }
+  }
 
   &Container {
     display: flex;
-    margin-bottom: 52px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
     align-items: flex-start;
+    justify-content: space-between;
   }
 
   &Value {
     font-weight: bold;
-    font-size: 64px;
+    font-size: 54px;
     color: $c-shark;
+    line-height: 1.2em;
+
+    @media only screen and (min-width: $b-desktop-width) {
+      font-size: 60px;
+    }
   }
 }
 
