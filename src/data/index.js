@@ -33,7 +33,7 @@ const data = {
   },
   sa: {
     rawDataset: saCaseCount.raw,
-    predictStartDate: DEFAULT_PREDICT_START_DATE,
+    predictStartDate: '2020-03-24',
   },
   tas: {
     rawDataset: tasCaseCount.raw,
