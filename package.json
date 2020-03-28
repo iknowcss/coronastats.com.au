@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "NODE_ENV=development webpack-dev-server --open --mode development",
-    "build": "rm -rf dist && webpack --mode production && cp -r static/* dist/",
+    "build": "rm -rf dist && webpack --mode production",
     "gbp": "git commit -a && git push origin master && npm run build && sudo docker-compose run --entrypoint ./bin/deploy-content.sh deployer",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,6 +16,7 @@
     "@babel/preset-env": "^7.9.0",
     "babel": "^6.23.0",
     "babel-loader": "^8.1.0",
+    "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.4.2",
     "html-loader": "^1.0.0",
     "html-webpack-plugin": "^4.0.1",

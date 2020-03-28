@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   context: __dirname,
@@ -41,5 +42,11 @@ module.exports = {
       hmr: process.env.NODE_ENV === 'development',
       reloadAll: true,
     }),
+    new CopyPlugin([
+      {
+        from: 'static/',
+        to: '',
+      }
+    ]),
   ]
 };
