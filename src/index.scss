@@ -61,6 +61,8 @@ a {
 }
 
 .graphContainer {
+  box-sizing: border-box;
+  padding: 8px;
   background-color: $c-white;
   width: 100%;
   height: (100vw * 200 / 375);
@@ -154,15 +156,24 @@ a {
   border-top: 10px solid $c-cape-cod;
 }
 
+.controlSectionContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 8px;
+}
+
 .controlTitle {
   @include sectionTitleSmall;
+
+  width: 10em;
+  margin-bottom: 16px;
 }
 
 .controlContainer {
-  $buttonSpacing: 8px;
+  $buttonSpacing: 16px;
   display: flex;
   flex-wrap: wrap;
-  margin-bottom: 32px - $buttonSpacing;
   width: 100%;
 
   .toggleButton {
@@ -181,6 +192,22 @@ a {
 
   input:checked + label {
     background-color: $c-white;
+  }
+}
+
+.overallStats {
+  width: 50%;
+
+  &Container {
+    display: flex;
+    margin-bottom: 52px;
+    align-items: flex-start;
+  }
+
+  &Value {
+    font-weight: bold;
+    font-size: 64px;
+    color: $c-shark;
   }
 }
 

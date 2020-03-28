@@ -49,6 +49,29 @@
 
     <h1 class="graphTitle">Can we forecast the number of COVID-19 cases in Australia?</h1>
 
+    <hr class="hrThick">
+
+    <h2>Forecast</h2>
+
+    <div id="scaleControl" class="controlSectionContainer">
+      <div class="controlTitle">Scale</div>
+      <div class="controlContainer">
+        <div class="toggleButton">
+          <input type="radio" name="graphScale" value="linear" id="graphScaleLinear" checked>
+          <label for="graphScaleLinear">Linear</label>
+        </div>
+        <div class="toggleButton">
+          <input type="radio" name="graphScale" value="log" id="graphScaleLog">
+          <label for="graphScaleLog">Logarithmic</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="locationControl" class="controlSectionContainer">
+      <div class="controlTitle">Location</div>
+      <div class="controlContainer"></div>
+    </div>
+
     <div class="graphContainer">
       <canvas id="graph"></canvas>
     </div>
@@ -74,30 +97,24 @@
       </div>
     </div>
 
-    <hr class="hrThin">
+    <hr class="hrThick">
 
-    <div id="scaleControl">
-      <div class="controlTitle">Scale</div>
-      <div class="controlContainer">
-        <div class="toggleButton">
-          <input type="radio" name="graphScale" value="linear" id="graphScaleLinear" checked>
-          <label for="graphScaleLinear">Linear</label>
-        </div>
-        <div class="toggleButton">
-          <input type="radio" name="graphScale" value="log" id="graphScaleLog">
-          <label for="graphScaleLog">Logarithmic</label>
-        </div>
+    <h2>Australia-wide Stats</h2>
+
+    <div class="overallStatsContainer">
+      <div class="overallStats">
+        <div class="overallStatsTitle">Doubling rate</div>
+        <div class="overallStatsValue">3 days, 23 hours</div>
       </div>
-    </div>
-
-    <div id="locationControl">
-      <div class="controlTitle">Location</div>
-      <div class="controlContainer"></div>
+      <div class="overallStats">
+        <div class="overallStatsTitle">Predicted cases by Easter (10 April)</div>
+        <div class="overallStatsValue">10,324</div>
+      </div>
     </div>
 
     <hr class="hrThick">
 
-    <h1>Sources</h1>
+    <h2>Sources</h2>
 
     <div class="lowerSectionContent">
       <ul>
@@ -118,7 +135,7 @@
 
     <hr class="hrThick">
 
-    <h1>About</h1>
+    <h2>About</h2>
 
     <div class="lowerSectionContent">
       <p>
@@ -142,7 +159,7 @@
 
     <hr class="hrThick">
 
-    <h1>Have a Question?</h1>
+    <h2>Have a Question?</h2>
 
     <div class="lowerSectionContent">
       <p>
