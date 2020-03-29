@@ -79,4 +79,4 @@ for row in health_tables[0].find_all('tr'):
     count = int(p.sub('', tds[1].text.strip()))
     location_data_map[loc_code] = (date_string, time_string, '+11:00', count)
 
-print(json.dumps(location_data_map))
+print(json.dumps(location_data_map, indent=2))
