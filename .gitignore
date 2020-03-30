@@ -6,3 +6,5 @@ node_modules/
 .idea
 .tmp/
 .env
+__pycache__/
+*.egg-info
