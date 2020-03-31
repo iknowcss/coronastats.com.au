@@ -1,13 +1,3 @@
-import ausCaseCount from './totalCaseCount_australia.json';
-import nswCaseCount from './totalCaseCount_nsw.json';
-import vicCaseCount from './totalCaseCount_vic.json';
-import qldCaseCount from './totalCaseCount_qld.json';
-import actCaseCount from './totalCaseCount_act.json';
-import saCaseCount from './totalCaseCount_sa.json';
-import tasCaseCount from './totalCaseCount_tas.json';
-import waCaseCount from './totalCaseCount_wa.json';
-import ntCaseCount from './totalCaseCount_nt.json';
-
 const DEFAULT_PREDICT_START_DATE = '2020-03-24';
 
 function all(promises) {
