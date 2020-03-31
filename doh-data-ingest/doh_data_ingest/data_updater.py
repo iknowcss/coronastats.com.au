@@ -1,3 +1,4 @@
+import os
 import boto3
 import json
 from datetime import datetime
@@ -25,25 +26,26 @@ def get_entry_time(entry):
 
 class DataUpdater:
     def __init__(self, **kwargs):
-        self.resource = boto3.resource('s3')
+        self.resource = boto3.resource('s3', region_name="ap-southeast-2")
         self.options = {
             "bucket": kwargs["bucket"],
             "key_prefix": kwargs["key_prefix"],
         }
 
     def apply_state_entry(self, state, entry):
+        bucket = self.options["bucket"]
         key = f"{self.options['key_prefix']}/totalCaseCount_{state}.json"
         s3_object = None
         object_dict = None
         try:
-            print("Fetch object", key)
-            s3_object = self.resource.Object(self.options["bucket"], key)
+            print(f"Fetch object s3://{bucket}/{key}")
+            s3_object = self.resource.Object(bucket, key)
             object_dict = json.loads(s3_object.get()["Body"].read().decode())
-        except ClientError:
-            print("Object does not exist; stop")
+        except ClientError as e:
+            print("Object does not exist; stop", e)
             return
-        except:
-            print("Failed to read object data")
+        except Exception as e:
+            print("Failed to read object data", e)
             return
 
         last_entry = object_dict["raw"][-1]
@@ -53,7 +55,9 @@ class DataUpdater:
         object_dict["raw"].append(entry)
         try:
             print("Put updated object")
-            s3_object.put(Body=json.dumps(object_dict))
+            print("**SKIP**")
+            print(json.dumps(object_dict["raw"][-2:], indent=2))
+#             s3_object.put(Body=json.dumps(object_dict))
         except:
             print("Failed to write object data")
             raise
