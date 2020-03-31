@@ -9,3 +9,12 @@ services:
       - .env
     working_dir: /app
     entrypoint: tail -f /dev/null
+  dataupdater:
+    build:
+      context: ./doh-data-ingest
+      dockerfile: Dockerfile
+    volumes:
+      - ./doh-data-ingest:/app
+      - $HOME/.aws:/root/.aws
+    env_file:
+      - .env

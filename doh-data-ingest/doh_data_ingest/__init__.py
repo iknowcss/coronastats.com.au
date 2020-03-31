@@ -1,5 +1,4 @@
 import requests
-import json
 from .data_extractor import extract_from_html
 from .data_updater import DataUpdater
 
@@ -11,7 +10,7 @@ def main():
     print('Fetch data from:', DATA_URL)
     response = requests.get(DATA_URL)
     page_html = response.text
-#     page_html = TEST_HTML
+    #     page_html = TEST_HTML
     print('Content length:', len(page_html))
 
     location_data_map = extract_from_html(page_html)

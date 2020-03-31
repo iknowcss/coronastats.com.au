@@ -55,7 +55,7 @@ def extract_from_html(page_html):
     time_string = format_time_match(time_match)
 
     print('Extract date')
-    date_re = re.compile('([123][0-9])\\s+([a-z]+)\\s+(20[0-9]{2})', re.I)
+    date_re = re.compile('([123]?[0-9])\\s+([a-z]+)\\s+(20[0-9]{2})', re.I)
     date_match = date_re.search(callout_text)
     if not(date_match):
         print('Failed to find date')
