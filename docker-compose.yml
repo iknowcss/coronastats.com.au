@@ -9,7 +9,7 @@ services:
       - .env
     working_dir: /app
     entrypoint: tail -f /dev/null
-  dataupdater:
+  data-updater:
     build:
       context: ./doh-data-ingest
       dockerfile: Dockerfile

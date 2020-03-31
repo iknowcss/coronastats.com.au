@@ -20,3 +20,6 @@ def main():
     )
     for item in location_data_map.items():
         updater.apply_state_entry(item[0], item[1])
+
+def lambda_handler(event, lambda_context):
+    main()
