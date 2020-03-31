@@ -50,12 +50,13 @@ class DataUpdater:
 
         last_entry = object_dict["raw"][-1]
         if get_entry_count(entry) == get_entry_count(last_entry) and (get_entry_time(entry) - get_entry_time(last_entry)).total_seconds() < IGNORE_IDENTICAL_COUNT_CUTOFF_SECONDS:
-            print("Skip update")
+            print("[~] Skip update")
             return
         object_dict["raw"].append(entry)
         try:
             print("[+] Put updated object")
             s3_object.put(Body=json.dumps(object_dict))
-        except:
-            print("[~] Failed to write object data")
+        except Exception as e:
+            print("[!] Failed to write object data")
+            print(e)
             raise
