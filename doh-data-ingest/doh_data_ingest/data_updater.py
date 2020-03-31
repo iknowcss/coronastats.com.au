@@ -54,8 +54,8 @@ class DataUpdater:
             return
         object_dict["raw"].append(entry)
         try:
-            print("Put updated object")
+            print("[+] Put updated object")
             s3_object.put(Body=json.dumps(object_dict))
         except:
-            print("Failed to write object data")
+            print("[~] Failed to write object data")
             raise
