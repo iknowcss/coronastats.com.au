@@ -10,6 +10,7 @@ requests = "^2.23.0"
 beautifulsoup4 = "^4.8.2"
 boto3 = "^1.12.32"
 pytest-watch = "^4.2.0"
+testfixtures = "^6.14.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
