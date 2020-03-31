@@ -5,6 +5,7 @@ from datetime import datetime
 from botocore.exceptions import ClientError
 
 IGNORE_IDENTICAL_COUNT_CUTOFF_SECONDS = 18 * 3600 # 18 hours
+CLOUDFRONT_CACHE_SECONDS = 60
 ENTRY_TUPLE = {
     "date": 0,
     "time": 1,
@@ -55,7 +56,10 @@ class DataUpdater:
         object_dict["raw"].append(entry)
         try:
             print("[+] Put updated object")
-            s3_object.put(Body=json.dumps(object_dict))
+            s3_object.put(
+                Body=json.dumps(object_dict),
+                CacheControl=f"max-age={CLOUDFRONT_CACHE_SECONDS}",
+            )
         except Exception as e:
             print("[!] Failed to write object data")
             print(e)

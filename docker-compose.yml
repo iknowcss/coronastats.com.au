@@ -16,5 +16,5 @@ services:
     volumes:
       - ./doh-data-ingest:/app
       - $HOME/.aws:/root/.aws
-#    env_file:
-#      - .env
+    env_file:
+      - .env
