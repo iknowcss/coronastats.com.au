@@ -1,4 +1,4 @@
-import rawData, { enrichedCollection } from './data';
+import { fetchData } from './data';
 import {createElement, getCookies} from './browserUtil';
 import { linestDaily, normaliseData, filterAfterDate } from './dataUtil';
 import {buildDatasets} from './chartUtil';
@@ -55,36 +55,7 @@ const graph = new Chart(document.getElementById('graph').getContext('2d'), {
   }
 });
 
-const locationControlContainer = document.querySelector('#locationControl .controlContainer');
-enrichedCollection.forEach((element) => {
-  locationControlContainer.appendChild(
-    createElement('div', { className: 'toggleButton' }, [
-      createElement('input', {
-        type: 'radio',
-        name: 'graphLocation',
-        value: element.stateCode,
-        id: `graphLocation${element.stateCode}`
-      }),
-      createElement('label', {
-        'for': `graphLocation${element.stateCode}`
-      }, element.stateCode)
-    ])
-  );
-});
-
-const {
-  lastStateCode = enrichedCollection[0].stateCode,
-  lastYScale = 'linear'
-} = getCookies();
-
 const formatYTick = value => value.toLocaleString();
-
-const formatYTickLog = value =>
-  (Math.log(value) / Math.log(10) + 1e-9) % 1 < 1e-8
-  || (Math.log(value / 2) / Math.log(10) + 1e-9) % 1 < 1e-8
-  || (Math.log(value / 5) / Math.log(10) + 1e-9) % 1 < 1e-8
-    ? formatYTick(value)
-    : '';
 
 function chooseYScale(scale) {
   if (scale === 'log') {
@@ -116,6 +87,7 @@ function chooseYScale(scale) {
   graph.update();
 }
 
+let enrichedCollection = [];
 function choseState(state) {
   let stateEntry = enrichedCollection.filter(x => x.stateCode === state)[0] || enrichedCollection[0];
   const {
@@ -146,7 +118,34 @@ document.getElementById('locationControl').addEventListener('change', (event) =>
   }
 });
 
-chooseYScale(lastYScale);
-choseState(lastStateCode);
-document.getElementById('doublingRateDisplay').innerHTML = formatTimeHTML(calculateDoublingRate(rawData.aus));
-document.getElementById('easterPredictionDisplay').innerText = estimateEasterNumber(rawData.aus).toLocaleString();
+fetchData().then((data) => {
+  const { rawData } = data;
+  enrichedCollection = data.enrichedCollection;
+  const {
+    lastStateCode = enrichedCollection[0].stateCode,
+    lastYScale = 'linear'
+  } = getCookies();
+
+  const locationControlContainer = document.querySelector('#locationControl .controlContainer');
+  locationControlContainer.innerHTML = '';
+  enrichedCollection.forEach((element) => {
+    locationControlContainer.appendChild(
+      createElement('div', { className: 'toggleButton' }, [
+        createElement('input', {
+          type: 'radio',
+          name: 'graphLocation',
+          value: element.stateCode,
+          id: `graphLocation${element.stateCode}`
+        }),
+        createElement('label', {
+          'for': `graphLocation${element.stateCode}`
+        }, element.stateCode)
+      ])
+    );
+  });
+
+  chooseYScale(lastYScale);
+  choseState(lastStateCode);
+  document.getElementById('doublingRateDisplay').innerHTML = formatTimeHTML(calculateDoublingRate(rawData.aus));
+  document.getElementById('easterPredictionDisplay').innerText = estimateEasterNumber(rawData.aus).toLocaleString();
+}, 1000);
