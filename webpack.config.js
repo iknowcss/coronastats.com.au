@@ -46,6 +46,10 @@ module.exports = {
       {
         from: 'static/',
         to: '',
+      },
+      {
+        from: 'src/data',
+        to: 'data',
       }
     ]),
   ]
