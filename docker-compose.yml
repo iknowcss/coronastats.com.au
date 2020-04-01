@@ -13,8 +13,8 @@ services:
     build:
       context: ./doh-data-ingest
       dockerfile: Dockerfile
+    env_file:
+      - .env
     volumes:
       - ./doh-data-ingest:/app
       - $HOME/.aws:/root/.aws
-    env_file:
-      - .env
