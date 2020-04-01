@@ -3,7 +3,7 @@ resource "aws_lambda_function" "data_updater" {
   tags = { project_name = var.project_name }
 
   filename = var.data_updater_source_code_path
-  source_code_hash = base64sha256(filebase64(var.data_updater_source_code_path))
+  source_code_hash = filebase64sha256(var.data_updater_source_code_path)
   handler = "doh_data_ingest.lambda_handler"
   runtime = "python3.7"
   memory_size = 128
@@ -34,6 +34,28 @@ resource "aws_iam_role" "data_updater" {
   ]
 }
 EOF
+}
+
+# - Write to Website Bucket --------------------------------------------------------------------------------------------
+
+resource "aws_cloudwatch_event_rule" "data_update_schedule" {
+  name                = "${var.project_name_safe}_data_update_schedule"
+  description         = "Schedule to run the data-updater lambda"
+  schedule_expression = "cron(0 * * * ? *)" # Every hour (UTC)
+}
+
+resource "aws_cloudwatch_event_target" "check_foo_every_one_minute" {
+  rule      = aws_cloudwatch_event_rule.data_update_schedule.name
+  target_id = "lambda"
+  arn       = aws_lambda_function.data_updater.arn
+}
+
+resource "aws_lambda_permission" "cloudwatch_call_data_updater" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.data_updater.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.data_update_schedule.arn
 }
 
 # - Write to Website Bucket --------------------------------------------------------------------------------------------
