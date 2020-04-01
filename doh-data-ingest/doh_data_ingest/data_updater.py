@@ -1,4 +1,3 @@
-import os
 import boto3
 import json
 from datetime import datetime
@@ -13,8 +12,10 @@ ENTRY_TUPLE = {
     "count": 3,
 }
 
+
 def get_entry_count(entry):
     return entry[ENTRY_TUPLE["count"]]
+
 
 def get_entry_time(entry):
     entry_date = entry[ENTRY_TUPLE["date"]]
@@ -25,6 +26,15 @@ def get_entry_time(entry):
         '%Y-%m-%dT%H:%M:%S%z',
     )
 
+
+def diff_entry_seconds(entry_a, entry_b):
+    return (get_entry_time(entry_a) - get_entry_time(entry_b)).total_seconds()
+
+
+def diff_entry_count(entry_a, entry_b):
+    return get_entry_count(entry_a) - get_entry_count(entry_b)
+
+
 class DataUpdater:
     def __init__(self, **kwargs):
         self.resource = boto3.resource('s3', region_name="ap-southeast-2")
@@ -33,29 +43,50 @@ class DataUpdater:
             "key_prefix": kwargs["key_prefix"],
         }
 
-    def apply_state_entry(self, state, entry):
+    def _get_current(self, state):
         bucket = self.options["bucket"]
         key = f"{self.options['key_prefix']}/totalCaseCount_{state}.json"
-        s3_object = None
-        object_dict = None
         try:
             print(f"Fetch object s3://{bucket}/{key}")
             s3_object = self.resource.Object(bucket, key)
             object_dict = json.loads(s3_object.get()["Body"].read().decode())
+            return s3_object, object_dict
         except ClientError as e:
             print("Object does not exist; stop", e)
-            return
+            return None, None
         except Exception as e:
             print("Failed to read object data", e)
+            raise e
+
+    def apply_state_entry(self, state, entry):
+        s3_object, object_dict = self._get_current(state)
+        if object_dict is None:
             return
 
-        last_entry = object_dict["raw"][-1]
-        if get_entry_count(entry) == get_entry_count(last_entry) and (get_entry_time(entry) - get_entry_time(last_entry)).total_seconds() < IGNORE_IDENTICAL_COUNT_CUTOFF_SECONDS:
+        if len(object_dict["raw"]) > 0:
+            last_entry = object_dict["raw"][-1]
+        else:
+            last_entry = None
+
+        # If the last entry has the same count as the new entry and it was made recently, skip the update
+        if last_entry is not None \
+                and diff_entry_count(entry, last_entry) == 0 \
+                and diff_entry_seconds(entry, last_entry) < IGNORE_IDENTICAL_COUNT_CUTOFF_SECONDS:
             print("[~] Skip update")
             return
-        object_dict["raw"].append(entry)
+
+        # If the last entry has the same time as the new entry and the
+        if last_entry is not None \
+                and diff_entry_seconds(entry, last_entry) == 0 \
+                and diff_entry_count(entry, last_entry) != 0:
+            print("[@] Update existing entry")
+            object_dict["raw"][-1] = entry
+        else:
+            print("[+] Insert new entry")
+            object_dict["raw"].append(entry)
+
+        # Write changes to S3
         try:
-            print("[+] Put updated object")
             s3_object.put(
                 Body=json.dumps(object_dict),
                 CacheControl=f"max-age={CLOUDFRONT_CACHE_SECONDS}",
