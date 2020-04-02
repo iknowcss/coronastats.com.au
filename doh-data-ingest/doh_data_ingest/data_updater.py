@@ -72,17 +72,17 @@ class DataUpdater:
         if last_entry is not None \
                 and diff_entry_count(entry, last_entry) == 0 \
                 and diff_entry_seconds(entry, last_entry) < IGNORE_IDENTICAL_COUNT_CUTOFF_SECONDS:
-            print("[~] Skip update")
+            print("[~] Skip update:", state)
             return
 
         # If the last entry has the same time as the new entry and the
         if last_entry is not None \
                 and diff_entry_seconds(entry, last_entry) == 0 \
                 and diff_entry_count(entry, last_entry) != 0:
-            print("[@] Update existing entry")
+            update_message = "[@] Update existing entry:"
             object_dict["raw"][-1] = entry
         else:
-            print("[+] Insert new entry")
+            update_message = "[+] Insert new entry:"
             object_dict["raw"].append(entry)
 
         # Write changes to S3
@@ -91,6 +91,7 @@ class DataUpdater:
                 Body=json.dumps(object_dict),
                 CacheControl=f"max-age={CLOUDFRONT_CACHE_SECONDS}",
             )
+            print(update_message, state)
         except Exception as e:
             print("[!] Failed to write object data")
             print(e)
