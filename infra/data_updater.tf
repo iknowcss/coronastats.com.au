@@ -41,7 +41,7 @@ EOF
 resource "aws_cloudwatch_event_rule" "data_update_schedule" {
   name                = "${var.project_name_safe}_data_update_schedule"
   description         = "Schedule to run the data-updater lambda"
-  schedule_expression = "cron(0 * * * ? *)" # Every hour (UTC)
+  schedule_expression = "cron(0/15 * * * ? *)" # Every 15th minute (:00, :15, :45)
 }
 
 resource "aws_cloudwatch_event_target" "check_foo_every_one_minute" {
@@ -69,10 +69,10 @@ resource "aws_iam_policy" "write_to_website_bucket" {
   "Statement": [
     {
       "Action": [
-        "s3:PutObject",
-        "logs:CreateLogStream"
+        "s3:GetObject",
+        "s3:PutObject"
       ],
-      "Resource": "${aws_cloudwatch_log_group.data_updater.arn}:*",
+      "Resource": "${aws_s3_bucket.website_bucket.arn}/*",
       "Effect": "Allow"
     }
   ]
