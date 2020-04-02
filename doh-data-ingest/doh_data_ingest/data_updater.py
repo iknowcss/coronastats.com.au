@@ -93,6 +93,6 @@ class DataUpdater:
             )
             print(update_message, state)
         except Exception as e:
-            print("[!] Failed to write object data")
+            print("[!] Failed to write object data:", state)
             print(e)
             raise
