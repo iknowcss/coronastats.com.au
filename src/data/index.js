@@ -1,4 +1,4 @@
-const DEFAULT_PREDICT_START_DATE = '2020-03-24';
+const DEFAULT_PREDICT_START_DATE = '2020-03-29';
 
 function all(promises) {
   let chain = Promise.resolve();
