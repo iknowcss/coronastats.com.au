@@ -3,12 +3,28 @@ const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
+const nodeEnv = process.env.NODE_ENV || 'production';
+const xxx = {
+  development: {
+    outputPath: path.resolve(__dirname, './dist'),
+    outputPublicPath: '',
+    htmlOutputFilename: 'index.html',
+    copyOutput: '',
+  },
+  production: {
+    outputPath: path.resolve(__dirname, './dist/assets'),
+    outputPublicPath: 'assets',
+    htmlOutputFilename: '../index.html',
+    copyOutput: '../',
+  },
+};
+
 module.exports = {
   context: __dirname,
   entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, './dist/'),
-    publicPath: '',
+    path: xxx[nodeEnv].outputPath,
+    publicPath: xxx[nodeEnv].outputPublicPath,
     filename: 'index.[contenthash].js'
   },
   module: {
@@ -36,7 +52,10 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebPackPlugin({ template: './src/index.html' }),
+    new HtmlWebPackPlugin({
+      template: './src/index.html',
+      filename: xxx[nodeEnv].htmlOutputFilename,
+    }),
     new MiniCssExtractPlugin({
       filename: 'index.[contenthash].css',
       hmr: process.env.NODE_ENV === 'development',
@@ -45,11 +64,7 @@ module.exports = {
     new CopyPlugin([
       {
         from: 'static/',
-        to: '',
-      },
-      {
-        from: 'src/data',
-        to: 'data',
+        to: xxx[nodeEnv].copyOutput,
       }
     ]),
   ]

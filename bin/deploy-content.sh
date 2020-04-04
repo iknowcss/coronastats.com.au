@@ -10,6 +10,8 @@ export AWS_SECRET_ACCESS_KEY
 export AWS_PROFILE
 
 aws s3 sync dist/ "s3://$website_bucket/" \
-  --cache-control 'max-age=60'
+  --cache-control 'max-age=60' \
+  --delete \
+  --exclude 'data/*'
 
 echo "Done"
