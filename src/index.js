@@ -1,5 +1,5 @@
 import { fetchData } from './data';
-import { createElement, getCookies } from './browserUtil';
+import { createElement, getCookies, padLeft } from './browserUtil';
 import { linestDaily, normaliseData, filterAfterDate } from './dataUtil';
 import { buildDatasets } from './chartUtil';
 import './ga';
@@ -87,9 +87,15 @@ function chooseYScale(scale) {
   graph.update();
 }
 
+const datePad = padLeft.bind(null, '0', 2);
 let enrichedCollection = [];
 function choseState(state) {
   let stateEntry = enrichedCollection.filter(x => x.stateCode === state)[0] || enrichedCollection[0];
+
+  const lastEntryDate = stateEntry.rawDataset[stateEntry.rawDataset.length - 1][0];
+  const fiveDaysAgo = new Date(`2020-${lastEntryDate}`);
+  fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+
   const {
     rawDataset,
     predictStartDate,
@@ -99,7 +105,7 @@ function choseState(state) {
   document.querySelector(`#graphLocation${stateCode}`).checked = true;
   graph.data.datasets = buildDatasets({
     label: '# Confirmed cases',
-    predictStartDate,
+    predictStartDate: `${fiveDaysAgo.getFullYear()}-${datePad(fiveDaysAgo.getMonth() + 1)}-${datePad(fiveDaysAgo.getDate())}`,
     predictEndDate,
   }, rawDataset);
   graph.update();

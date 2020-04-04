@@ -201,7 +201,8 @@ a {
   }
 
   input:checked + label {
-    background-color: $c-white;
+    background-color: $c-shark;
+    color: $c-aqua-haze;
   }
 }
 

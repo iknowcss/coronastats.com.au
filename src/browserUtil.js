@@ -25,3 +25,6 @@ export function createElement(tag, attributes = {}, children) {
   }
   return el;
 }
+
+export const padLeft = (c, len, str) =>
+  Array.from({ length: len - str.toString().length }, () => c).join('') + str;
