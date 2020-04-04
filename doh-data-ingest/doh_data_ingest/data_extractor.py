@@ -1,6 +1,8 @@
 import sys
+import math
 import re
 from bs4 import BeautifulSoup
+import pendulum
 
 LOCATION_CODE_MAP = {
     'Australian Capital Territory': 'act',
@@ -14,18 +16,18 @@ LOCATION_CODE_MAP = {
     'Total**': 'australia'
 }
 MONTH_MAP = {
-    'january': '01',
-    'february': '02',
-    'march': '03',
-    'april': '04',
-    'may': '05',
-    'june': '06',
-    'july': '07',
-    'august': '08',
-    'september': '09',
-    'october': '10',
-    'november': '11',
-    'december': '12',
+    'january': 1,
+    'february': 2,
+    'march': 3,
+    'april': 4,
+    'may': 5,
+    'june': 6,
+    'july': 7,
+    'august': 8,
+    'september': 9,
+    'october': 10,
+    'november': 11,
+    'december': 12,
 }
 
 
@@ -60,7 +62,16 @@ def extract_from_html(page_html):
     if not(date_match):
         print('Failed to find date')
         sys.exit(1)
-    date_string = f'{MONTH_MAP[date_match[2]]}-{date_match[1].zfill(2)}'
+
+    parsed_date = pendulum.datetime(
+        int(date_match[3]),
+        MONTH_MAP[date_match[2]],
+        int(date_match[1]),
+        int(time_match[1]) if time_match[3] == 'am' else int(time_match[1]) + 12,
+        tz='Australia/Sydney',
+    )
+    date_string = parsed_date.format('MM-DD')
+    timezone_string = '+' + str(math.floor(parsed_date.offset / 3600)) + ':00'
 
     print('Extract location data')
     location_data_map = {}
@@ -73,6 +84,6 @@ def extract_from_html(page_html):
         loc = tds[0].text.strip()
         loc_code = LOCATION_CODE_MAP[loc]
         count = int(p.sub('', tds[1].text.strip()))
-        location_data_map[loc_code] = (date_string, time_string, '+11:00', count)
+        location_data_map[loc_code] = (date_string, time_string, timezone_string, count)
 
     return location_data_map
