@@ -1,7 +1,7 @@
 import { fetchData } from './data';
-import {createElement, getCookies} from './browserUtil';
+import { createElement, getCookies } from './browserUtil';
 import { linestDaily, normaliseData, filterAfterDate } from './dataUtil';
-import {buildDatasets} from './chartUtil';
+import { buildDatasets } from './chartUtil';
 import './ga';
 import './index.scss';
 

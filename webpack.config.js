@@ -58,14 +58,14 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: 'index.[contenthash].css',
-      hmr: process.env.NODE_ENV === 'development',
+      hmr: nodeEnv === 'development',
       reloadAll: true,
     }),
     new CopyPlugin([
       {
         from: 'static/',
         to: xxx[nodeEnv].copyOutput,
-      }
+      },
     ]),
   ]
 };
