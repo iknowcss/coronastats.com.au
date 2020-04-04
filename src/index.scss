@@ -30,15 +30,12 @@ a {
 }
 
 .layoutWrapper {
+  box-sizing: border-box;
   max-width: 1086px;
   margin: 0 auto;
-}
+  padding: 0 24px;
 
-.mainContent {
-  box-sizing: border-box;
-  margin: 0 24px;
-
-  &::before {
+  &--first::before {
     content: '';
     display: block;
     position: relative;
@@ -147,13 +144,17 @@ a {
 .hrThin {
   margin: 0 0 24px 0;
   border: 0;
-  border-top: 1px solid $c-cape-cod;
+  border-top: 4px solid $c-cape-cod;
 }
 
 .hrThick {
   margin: 0 0 24px 0;
   border: 0;
   border-top: 10px solid $c-cape-cod;
+}
+
+.hrPushTop {
+  margin-top: 64px;
 }
 
 .controlSectionContainer {
@@ -247,5 +248,26 @@ a {
     width: 24px;
     height: 24px;
     margin-right: 4px;
+
+    svg {
+      fill: $c-porcelain;
+    }
+  }
+}
+
+.darkSection {
+  background-color: $c-shark;
+  overflow: hidden;
+
+  &, h1, h2, p {
+    color: $c-porcelain;
+  }
+
+  .hrThin {
+    border-top-color: $c-porcelain;
+  }
+
+  .hrThick {
+    border-top-color: $c-porcelain;
   }
 }
