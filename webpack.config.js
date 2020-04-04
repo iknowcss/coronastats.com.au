@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 const nodeEnv = process.env.NODE_ENV || 'production';
-const xxx = {
+const envConfig = {
   development: {
     outputPath: path.resolve(__dirname, './dist'),
     outputPublicPath: '',
@@ -23,8 +23,8 @@ module.exports = {
   context: __dirname,
   entry: './src/index.js',
   output: {
-    path: xxx[nodeEnv].outputPath,
-    publicPath: xxx[nodeEnv].outputPublicPath,
+    path: envConfig[nodeEnv].outputPath,
+    publicPath: envConfig[nodeEnv].outputPublicPath,
     filename: 'index.[contenthash].js'
   },
   module: {
@@ -54,7 +54,7 @@ module.exports = {
   plugins: [
     new HtmlWebPackPlugin({
       template: './src/index.html',
-      filename: xxx[nodeEnv].htmlOutputFilename,
+      filename: envConfig[nodeEnv].htmlOutputFilename,
     }),
     new MiniCssExtractPlugin({
       filename: 'index.[contenthash].css',
@@ -64,7 +64,7 @@ module.exports = {
     new CopyPlugin([
       {
         from: 'static/',
-        to: xxx[nodeEnv].copyOutput,
+        to: envConfig[nodeEnv].copyOutput,
       },
     ]),
   ]

@@ -119,8 +119,7 @@ document.getElementById('locationControl').addEventListener('change', (event) =>
 });
 
 fetchData().then((data) => {
-  const { rawData } = data;
-  enrichedCollection = data.enrichedCollection;
+  enrichedCollection = data;
   const {
     lastStateCode = enrichedCollection[0].stateCode,
     lastYScale = 'linear'
@@ -146,6 +145,10 @@ fetchData().then((data) => {
 
   chooseYScale(lastYScale);
   choseState(lastStateCode);
-  document.getElementById('doublingRateDisplay').innerHTML = formatTimeHTML(calculateDoublingRate(rawData.aus));
-  document.getElementById('easterPredictionDisplay').innerText = estimateEasterNumber(rawData.aus).toLocaleString();
+
+  const australiaData = enrichedCollection.filter(item => item.stateCode === 'ALL')[0];
+  document.getElementById('doublingRateDisplay')
+    .innerHTML = formatTimeHTML(calculateDoublingRate(australiaData));
+  document.getElementById('easterPredictionDisplay')
+    .innerText = estimateEasterNumber(australiaData).toLocaleString();
 }, 1000);
