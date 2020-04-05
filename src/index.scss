@@ -200,8 +200,13 @@ a {
 
   @media only screen and (min-width: $b-desktop-width) {
     flex-wrap: nowrap;
-    #scaleControl {
-      min-width: 18em;
+
+    #scaleControl .controlContainer {
+      flex-wrap: nowrap;
+    }
+
+    #locationControl {
+      .controlContainer { max-width: 40em; }
     }
 
     &Separator {
@@ -285,8 +290,11 @@ a {
 
     @media only screen and (min-width: $b-desktop-width) {
       &Area {
+        justify-content: space-between;
         max-height: 30em;
         margin-top: 0;
+        display: flex;
+        flex-wrap: nowrap;
       }
       &Label { display: none; }
     }
