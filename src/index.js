@@ -185,7 +185,7 @@ fetchData().then((data) => {
     tagElement.setAttribute('class', `overallStatsTag ${modifiers.map(m => `overallStatsTag--${m}`).join(' ')}`);
     if (modifiers.length > 0) {
       tagElement.appendChild(createElement('img', {
-        src: '/static/arrow.svg',
+        src: '/arrow.svg',
         className: 'overallStatsTagIcon'
       }));
     }
