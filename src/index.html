@@ -46,41 +46,51 @@
 <div class="layoutWrapper layoutWrapper--first">
   <div class="pageTitle">Corona Forecast</div>
 
-  <h1 class="graphTitle">Can we forecast the number of confirmed COVID-19 cases in Australia?</h1>
+  <h1 class="pageHeading">Can we forecast the number of confirmed COVID-19 cases in Australia?</h1>
 
   <hr class="hrThin">
 
-  <h2>Forecast</h2>
+  <h2 class="graphTitle">Forecast</h2>
 
-  <div id="scaleControl" class="controlSectionContainer">
-    <div class="controlTitle">Scale</div>
-    <div class="controlContainer">
-      <div class="toggleButton">
-        <input type="radio" name="graphScale" value="linear" id="graphScaleLinear" checked>
-        <label for="graphScaleLinear">Linear</label>
-      </div>
-      <div class="toggleButton">
-        <input type="radio" name="graphScale" value="log" id="graphScaleLog">
-        <label for="graphScaleLog">Logarithmic</label>
+  <div class="mainReorder">
+    <div class="controlSectionContainer">
+      <input type="checkbox" id="controlSectionCollapser" class="controlSectionCollapser">
+      <label for="controlSectionCollapser" class="controlSectionCollapserLabel">Filters</label>
+
+      <div class="controlSectionCollapserArea">
+        <hr class="hrXThin controlSectionContainerSeparator">
+
+        <div id="scaleControl" class="controlSection">
+          <div class="controlTitle">Scale</div>
+          <div class="controlContainer">
+            <div class="toggleButton">
+              <input type="radio" name="graphScale" value="log" id="graphScaleLog">
+              <label for="graphScaleLog">Logarithmic</label>
+            </div>
+            <div class="toggleButton">
+              <input type="radio" name="graphScale" value="linear" id="graphScaleLinear" checked>
+              <label for="graphScaleLinear">Linear</label>
+            </div>
+          </div>
+        </div>
+
+        <div id="locationControl" class="controlSection">
+          <div class="controlTitle">Location</div>
+          <div class="controlContainer">
+            <div class="toggleButton">
+              <input type="radio">
+              <label>...</label>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div id="locationControl" class="controlSectionContainer">
-    <div class="controlTitle">Location</div>
-    <div class="controlContainer">
-      <div class="toggleButton">
-        <input type="radio">
-        <label>...</label>
-      </div>
+    <div class="graphContainer">
+      <canvas id="graph"></canvas>
     </div>
-  </div>
 
-  <div class="graphContainer">
-    <canvas id="graph"></canvas>
-  </div>
-
-  <div class="graphLegend">
+    <div class="graphLegend">
     <div class="graphLegendConfirmedCases">
       <div class="graphLegendConfirmedCasesBubbles">
         <span></span>
@@ -99,6 +109,7 @@
         Prediction
       </div>
     </div>
+  </div>
   </div>
 
   <hr class="hrThin">

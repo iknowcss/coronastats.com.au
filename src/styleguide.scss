@@ -16,7 +16,7 @@ body {
 
 @mixin t-h1() {
   font-weight: bold;
-  font-size: 30px;
+  font-size: 24px;
   color: $c-shark;
   line-height: 120%;
   letter-spacing: -0.02em;
@@ -28,7 +28,7 @@ body {
 
 @mixin t-h2() {
   @include t-h1();
-  font-size: 28px;
+  font-size: 24px;
 
   @media only screen and (min-width: $b-desktop-width) {
     font-size: 36px;

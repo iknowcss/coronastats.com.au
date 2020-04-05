@@ -15,8 +15,10 @@ h1 {
   @include t-h1;
   margin: 0 0 16px 0;
 }
-h2 { @include t-h2; }
-h2 { @include t-h2; }
+h2 {
+  @include t-h2;
+  margin: 0 0 24px 0;
+}
 p { @include t-p; }
 a {
   color: $c-sunglo;
@@ -25,7 +27,7 @@ a {
 
 @mixin sectionTitleSmall() {
   @include t-mono;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   font-size: 14px;
 }
 
@@ -49,12 +51,27 @@ a {
 
 .pageTitle {
   @include sectionTitleSmall;
-  margin-top: 42px;
   font-size: 12px;
+
+  margin-top: 26px;
+
+  @media only screen and (min-width: $b-desktop-width) {
+    margin-top: 42px;
+  }
+}
+
+.pageHeading {
+  @media only screen and (min-width: $b-desktop-width) {
+    margin-bottom: 32px;
+  }
 }
 
 .graphTitle {
-  margin-bottom: 32px;
+  display: none;
+
+  @media only screen and (min-width: $b-desktop-width) {
+    display: block;
+  }
 }
 
 .graphContainer {
@@ -141,31 +158,138 @@ a {
   }
 }
 
-.hrThin {
-  margin: 0 0 24px 0;
-  border: 0;
-  border-top: 4px solid $c-cape-cod;
-}
+.hr {
+  &Thick, &Thin, &XThin {
+    border: 0;
+    border-top: 0 solid $c-cape-cod;
+    margin: 0 0 24px 0;
 
-.hrThick {
-  margin: 0 0 24px 0;
-  border: 0;
-  border-top: 10px solid $c-cape-cod;
+    @media only screen and (min-width: $b-desktop-width) {
+      margin: 0 0 38px 0;
+    }
+  }
+
+  &XThin { border-top-width: 1px; }
+  &Thin { border-top-width: 4px; }
+  &Thick { border-top-width: 10px; }
 }
 
 .hrPushTop {
   margin-top: 64px;
 }
 
+.mainReorder {
+  display: flex;
+  flex-direction: column;
+
+  .controlSectionContainer { order: 3; }
+  .graphContainer { order: 1; }
+  .graphLegend { order: 2; }
+
+  @media only screen and (min-width: $b-desktop-width) {
+    .controlSectionContainer { order: 1; }
+    .graphContainer { order: 2; }
+    .graphLegend { order: 3; }
+  }
+}
+
 .controlSectionContainer {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 8px;
   flex-wrap: wrap;
+  position: relative;
 
   @media only screen and (min-width: $b-desktop-width) {
     flex-wrap: nowrap;
+    #scaleControl {
+      min-width: 18em;
+    }
+
+    &Separator {
+      display: none;
+    }
+  }
+
+  &Separator {
+    width: 100%;
+  }
+}
+
+.controlSection {
+  margin-bottom: 16px;
+
+  &Collapser {
+    display: none;
+
+    &Label {
+      @include button();
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+      text-align: center;
+      background-color: $c-shark;
+      color: $c-aqua-haze;
+      position: absolute;
+      max-height: 3em;
+      overflow-y: hidden;
+      transition:
+        max-height 300ms ease-in,
+        padding-top 300ms ease-in,
+        padding-bottom 300ms ease-in,
+        border-top-width 300ms ease-in,
+        border-bottom-width 300ms ease-in;
+
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: calc(50% - 4px);
+        right: 21px;
+        border: 1px solid $c-aqua-haze;
+        border-left-color: transparent;
+        border-top-color: transparent;
+        box-sizing: border-box;
+        width: 8px;
+        height: 8px;
+        transform: translateY(-2px) rotateZ(45deg);
+        transform-origin: 50% 50%;
+        transition: transform 100ms ease-in;
+      }
+    }
+
+    &:checked ~ &Label {
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-top-width: 0;
+      border-bottom-width: 0;
+
+      &::after {
+        transform: translateY(3px) rotateZ(225deg);
+      }
+    }
+
+    &Area {
+      overflow-y: hidden;
+      max-height: 0;
+      width: 100%;
+      transition:
+        max-height 300ms ease-in,
+        margin-top 300ms ease-in;
+      margin-top: 64px;
+    }
+
+    &:checked ~ &Area {
+      max-height: 30em;
+      margin-top: 0;
+    }
+
+    @media only screen and (min-width: $b-desktop-width) {
+      &Area {
+        max-height: 30em;
+        margin-top: 0;
+      }
+      &Label { display: none; }
+    }
   }
 }
 
@@ -264,11 +388,7 @@ a {
     color: $c-porcelain;
   }
 
-  .hrThin {
-    border-top-color: $c-porcelain;
-  }
-
-  .hrThick {
+  .hrThin, .hrThick {
     border-top-color: $c-porcelain;
   }
 }
