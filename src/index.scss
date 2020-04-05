@@ -357,15 +357,49 @@ a {
     justify-content: space-between;
   }
 
+  &ValueContainer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+  }
+
   &Value {
+    display: inline-block;
     font-weight: bold;
     font-size: 54px;
     color: $c-shark;
     line-height: 1.2em;
+    padding-right: 14px;
 
     @media only screen and (min-width: $b-desktop-width) {
       font-size: 60px;
     }
+  }
+
+  &Tag {
+    text-transform: uppercase;
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 14px;
+    background-color: $c-cape-cod;
+    padding: 8px;
+    color: $c-white;
+    border-radius: 3px;
+    line-height: 1em;
+    text-align: center;
+    transform: translateY(-9px);
+
+    &--positive { background-color: $c-apple; }
+    &--negative { background-color: $c-sunglo; }
+
+    &Icon {
+      width: 10px;
+      margin-right: 4px;
+    }
+    &--down &Icon { transform: rotateZ(-90deg); }
+    &--up &Icon { transform: rotateZ(90deg); }
+
+    &Text { letter-spacing: 0.1em; }
   }
 }
 

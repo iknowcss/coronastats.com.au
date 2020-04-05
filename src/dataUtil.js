@@ -1,11 +1,22 @@
+export const xxx = parts => new Date(`2020-${parts[0]}T${parts[1]}:00.000${parts[2]}`);
+
 export const normaliseData = data => data.map(parts => ({
-  x: new Date(`2020-${parts[0]}T${parts[1]}:00.000${parts[2]}`),
+  x: xxx(parts),
   y: parts[3],
 }));
 
 export function filterAfterDate(aestDate, data) {
-  const afterDate = new Date(`${aestDate}T00:00:00.000+10:00`);
+  const afterDate = aestDate instanceof Date
+    ? aestDate
+    : new Date(`${aestDate}T00:00:00.000+10:00`);
   return data.filter(c => c.y > 0 && c.x.getTime() >= afterDate.getTime());
+}
+
+export function filterBeforeDate(aestDate, data) {
+  const afterDate = aestDate instanceof Date
+    ? aestDate
+    : new Date(`${aestDate}T00:00:00.000+10:00`);
+  return data.filter(c => c.y > 0 && c.x.getTime() < afterDate.getTime());
 }
 
 const avg = set =>  set.reduce((sum, n) => sum + n, 0) / set.length;

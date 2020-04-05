@@ -19,6 +19,8 @@ export function createElement(tag, attributes = {}, children) {
       children.forEach(child => {
         el.appendChild(child)
       });
+    } else if (children.html) {
+      el.innerHTML = children.html;
     } else {
       el.appendChild(children);
     }
