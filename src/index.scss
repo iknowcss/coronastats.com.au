@@ -84,6 +84,7 @@ a {
 
   @media only screen and (min-width: $b-desktop-width) {
     height: 50vh;
+    min-height: 300px;
   }
 }
 
