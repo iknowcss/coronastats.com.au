@@ -1,6 +1,6 @@
 import { fetchData } from './data';
 import { createElement, getCookies, datePad } from './browserUtil';
-import { linestDaily, normaliseData, filterAfterDate, filterBeforeDate, linest } from './dataUtil';
+import { linestDaily, logisticEstDaily, normaliseData, filterAfterDate, filterBeforeDate, linest } from './dataUtil';
 import { buildDatasets } from './chartUtil';
 import './ga';
 import './index.scss';
@@ -9,18 +9,20 @@ const MILLI_PER_DAY = 1000 * 86400;
 const DISPLAY_START_DATE = '2020-03-08';
 const DEFAULT_PREDICT_END_DATE = '2020-04-12';
 const GRAPH_Y_MIN = 5;
-const GRAPH_Y_MAX = 10000;
+const GRAPH_Y_MAX = 5000;
 const EASTER_DATE = new Date('2020-04-10T15:00:00.000+10:00');
 
 // Sample filtering
 
+const logY = (normalData) => normalData.map(({ x, y }) => ({ x, y: Math.log(y) }));
+
 function getLinestSampleData(stateData) {
-  const normalData = normaliseData(stateData.rawDataset);
+  const normalData = logY(normaliseData(stateData.rawDataset));
   return filterAfterDate(stateData.predictStartDate, normalData);
 }
 
 function getPreviousLinestSampleData(stateData) {
-  const normalData = normaliseData(stateData.rawDataset);
+  const normalData = logY(normaliseData(stateData.rawDataset));
   const predictStartDate = new Date(`${stateData.predictStartDate}T00:00:00.000+10:00`);
   predictStartDate.setDate(predictStartDate.getDate() - 1);
   const predictEndDate = normalData[normalData.length - 1].x;
@@ -118,9 +120,8 @@ const exponentialFitter = (sampleData) => {
 };
 
 const logisticFitter = (sampleData) => {
-  const logYData = sampleData.map(({ x, y }) => ({ x, y: Math.log(y) }));
-  const { alpha, beta } = linestDaily(logYData);
-  return x => Math.exp(beta * x + alpha);
+  const { L, k, x0 } = logisticEstDaily(sampleData);
+  return x => L / (1 + Math.exp(-k * (x - x0)));
 };
 
 let enrichedCollection = [];
@@ -139,13 +140,10 @@ function choseState(state) {
   document.querySelector(`#graphLocation${stateCode}`).checked = true;
   graph.data.datasets = buildDatasets({
     label: '# Confirmed cases',
-
-    // fitter: exponentialFitter,
-    // predictStartDate: `${fiveDaysAgo.getFullYear()}-${datePad(fiveDaysAgo.getMonth() + 1)}-${datePad(fiveDaysAgo.getDate())}`,
-
-    fitter: logisticFitter,
-    predictStartDate: '2020-03-01',
-
+    fitter: exponentialFitter,
+    // fitter: logisticFitter,
+    predictStartDate: `${fiveDaysAgo.getFullYear()}-${datePad(fiveDaysAgo.getMonth() + 1)}-${datePad(fiveDaysAgo.getDate())}`,
+    // predictStartDate: '2020-03-08',
     predictEndDate,
   }, rawDataset);
   graph.update();

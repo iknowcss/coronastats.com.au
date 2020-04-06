@@ -1,3 +1,7 @@
+import fminsearch from './util/fminsearch';
+
+window.fminsearch = fminsearch;
+
 export const xxx = parts => new Date(`2020-${parts[0]}T${parts[1]}:00.000${parts[2]}`);
 
 export const normaliseData = data => data.map(parts => ({
@@ -36,3 +40,23 @@ export function linest(options = {}, data) {
 }
 
 export const linestDaily = data => linest({ period: 86400000 }, data);
+
+export function logisticEstDaily(data) {
+  const xvec = data.map(c => c.x.getTime() / 86400000);
+  const yvec = data.map(c => c.y);
+  const [min, max] = yvec.reduce((minmax, y) => [
+    Math.min(y, minmax[0]),
+    Math.max(y, minmax[1]),
+  ], [Infinity, 0]);
+  const midpoint = (max - min) / 2;
+  const midpointX = yvec.findIndex(y => y >= midpoint);
+  const x00 = xvec[midpointX];
+
+  const [L, k, x0] = fminsearch(
+    (x, P) => x.map(xi => P[0] / (1 + Math.exp(-P[1] * (xi - P[2])))),
+    [max, 1, x00],
+    xvec,
+    yvec,
+  );
+  return { L, k, x0 };
+}

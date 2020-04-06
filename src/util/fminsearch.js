@@ -1,11 +1,15 @@
-function fminsearch(fun, Parm0, x, y, Opt) {
-  // fun = function(x,Parm)
+export default function (fun, Parm0, x, y, Opt) {
+  // fun = function(x, Parm)
   // example
   //
   // x = [32,37,42,47,52,57,62,67,72,77,82,87,92];
   // y = [749,1525,1947,2201,2380,2537,2671,2758,2803,2943,3007,2979,2992]
-  // fun = function(x,P){return x.map(function(xi){return (P[0]+1/(1/(P[1]*(xi-P[2]))+1/P[3]))})}
-  // Parms=jmat.fminsearch(fun,[100,30,10,5000],x,y)
+  // fun = function (x, P) {
+  //   return x.map(function (xi) {
+  //     return (P[0] + 1 / (1 / (P[1] * (xi - P[2])) + 1 / P[3]))
+  //   });
+  // }
+  // Parms = jmat.fminsearch(fun, [100, 30, 10, 5000], x, y);
   //
   // Another test:
   // x=[32,37,42,47,52,57,62,67,72,77,82,87,92];
@@ -22,14 +26,26 @@ function fminsearch(fun, Parm0, x, y, Opt) {
     Opt.step=Opt.step.map(function(si){if(si===0){return 1}else{ return si}}); // convert null steps into 1's
   };
   if(typeof(Opt.display)=='undefined'){Opt.display=true};
-  if(!Opt.objFun){Opt.objFun=function(y,yp){return y.map(function(yi,i){return Math.pow((yi-yp[i]),2)}).reduce(function(a,b){return a+b})}} //SSD
+  if (!Opt.objFun) {
+    Opt.objFun = function(y,yp) {
+      return y.map(function (yi,i) {
+        return Math.pow((yi-yp[i]),2)
+      }).reduce(function (a,b) { return a+b; })
+    }
+  } //SSD
 
-  var cloneVector=function(V){return V.map(function(v){return v})};
+  var cloneVector = function(V) {
+    return V.map(function (v) {
+      return v;
+    });
+  };
   var ya,y0,yb,fP0,fP1;
   var P0=cloneVector(Parm0),P1=cloneVector(Parm0);
   var n = P0.length;
   var step=Opt.step;
-  var funParm=function(P){return Opt.objFun(y,fun(x,P))}//function (of Parameters) to minimize
+  var funParm = function (P) {
+    return Opt.objFun(y,fun(x,P));
+  };//function (of Parameters) to minimize
   // silly multi-univariate screening
   for(var i=0;i<Opt.maxIter;i++){
     for(var j=0;j<n;j++){ // take a step for each parameter
@@ -43,44 +59,14 @@ function fminsearch(fun, Parm0, x, y, Opt) {
         step[j]=-(0.5*step[j]); // otherwiese reverse and go slower
       }
     }
-    if(Opt.display){if(i>(Opt.maxIter-10)){console.log(i+1,funParm(P0),P0)}}
+    if (Opt.display) {
+      if (i > (Opt.maxIter - 10)) {
+        console.log(i+1,funParm(P0),P0)
+      }
+    }
   }
   if (!!document.getElementById('plot')){ // if there is then use it
     fminsearch.plot(x,y,fun(x,P0),P0);
   }
   return P0
 }
-
-fminsearch.load=function(src){
-  // script loading
-  // example: fminsearch.load('http://localhost:8888/jmat/jmat.js')
-  var s = document.createElement('script');
-  s.src = src;
-  document.head.appendChild(s);
-  s.parentElement.removeChild(s);
-};
-
-fminsearch.plot = function (x, y, yp, Parms) {
-  // ploting results using <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  // create Array in Google's format
-  var data = new google.visualization.DataTable();
-  data.addColumn('number', 'X');
-  data.addColumn('number', 'Observed');
-  data.addColumn('number', 'Model fit');
-  var n = x.length;
-  for (var i=0;i<n;i++){
-    data.addRow([x[i],y[i],yp[i]]);
-  };
-  //var chart = new google.visualization.ScatterChart(
-  var titulo='Model fitting';
-  if(!!Parms){titulo='Model parameters: '+Parms};
-  var chart = new google.visualization.ComboChart(
-    document.getElementById('plot'));
-  chart.draw(data, {title: titulo,
-    width: 600, height: 400,
-    vAxis: {title: "Y", titleTextStyle: {color: "green"}},
-    hAxis: {title: "X", titleTextStyle: {color: "green"}},
-    seriesType: "scatter",
-    series: {1: {type: "line"}}}
-  );
-};
