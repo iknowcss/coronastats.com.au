@@ -30,3 +30,5 @@ export function createElement(tag, attributes = {}, children) {
 
 export const padLeft = (c, len, str) =>
   Array.from({ length: len - str.toString().length }, () => c).join('') + str;
+
+export const datePad = padLeft.bind(null, '0', 2);

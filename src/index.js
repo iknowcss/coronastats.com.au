@@ -1,5 +1,5 @@
 import { fetchData } from './data';
-import { createElement, getCookies, padLeft } from './browserUtil';
+import { createElement, getCookies, datePad } from './browserUtil';
 import { linestDaily, normaliseData, filterAfterDate, filterBeforeDate, xxx } from './dataUtil';
 import { buildDatasets } from './chartUtil';
 import './ga';
@@ -10,13 +10,16 @@ const DISPLAY_START_DATE = '2020-03-08';
 const DEFAULT_PREDICT_END_DATE = '2020-04-12';
 const GRAPH_Y_MIN = 5;
 const GRAPH_Y_MAX = 10000;
+const EASTER_DATE = new Date('2020-04-10T15:00:00.000+10:00');
 
-function getSampleData(stateData) {
+// Sample filtering
+
+function getLinestSampleData(stateData) {
   const normalData = normaliseData(stateData.rawDataset);
   return filterAfterDate(stateData.predictStartDate, normalData);
 }
 
-function getPreviousSampleData(stateData) {
+function getPreviousLinestSampleData(stateData) {
   const normalData = normaliseData(stateData.rawDataset);
   const predictStartDate = new Date(`${stateData.predictStartDate}T00:00:00.000+10:00`);
   predictStartDate.setDate(predictStartDate.getDate() - 1);
@@ -25,41 +28,37 @@ function getPreviousSampleData(stateData) {
   return filterBeforeDate(predictEndDate, filterAfterDate(predictStartDate, normalData));
 }
 
+// Doubling rate
+
 function calculateDoublingRate(stateData) {
-  const sampleData = getSampleData(stateData);
+  const sampleData = getLinestSampleData(stateData);
   const { beta } = linestDaily(sampleData);
   return Math.log(2) / beta;
 }
 
 function calculatePreviousDoublingRate(stateData) {
-  const sampleData = getPreviousSampleData(stateData);
+  const sampleData = getPreviousLinestSampleData(stateData);
   const { beta } = linestDaily(sampleData);
   return Math.log(2) / beta;
 }
 
-function formatTimeHTML(days) {
-  if (days >= 1) {
-    const daysRounded = Math.round(days);
-    return `${daysRounded}&nbsp;day${daysRounded === 1 ? '' : 's'}`;
-  }
-  const hoursRounded = Math.round(days * 24);
-  return `${hoursRounded}&nbsp;hour${hoursRounded === 1 ? '' : 's'}`;
-}
-
-const EASTER_DATE = new Date('2020-04-10T15:00:00.000+10:00');
+// Easter number
 
 function estimateEasterNumber(stateData) {
-  const sampleData = getSampleData(stateData);
+  const sampleData = getLinestSampleData(stateData);
   const { alpha, beta } = linestDaily(sampleData);
   return Math.round(Math.exp(beta * (EASTER_DATE.getTime() / MILLI_PER_DAY) + alpha));
 }
 
 function estimatePreviousEasterNumber(stateData) {
-  const sampleData = getPreviousSampleData(stateData);
+  const sampleData = getPreviousLinestSampleData(stateData);
   const { alpha, beta } = linestDaily(sampleData);
   return Math.round(Math.exp(beta * (EASTER_DATE.getTime() / MILLI_PER_DAY) + alpha));
 }
 
+// - Rendering ---------------------------------------------------------------------------------------------------------
+
+// Render and control graph
 const graph = new Chart(document.getElementById('graph').getContext('2d'), {
   type: 'scatter',
   data: {},
@@ -82,8 +81,6 @@ const graph = new Chart(document.getElementById('graph').getContext('2d'), {
   }
 });
 
-const formatYTick = value => value.toLocaleString();
-
 function chooseYScale(scale) {
   if (scale === 'log') {
     document.getElementById('graphScaleLog').checked = true;
@@ -93,7 +90,7 @@ function chooseYScale(scale) {
         autoSkip: true,
         suggestedMin: GRAPH_Y_MIN,
         suggestedMax: GRAPH_Y_MAX,
-        callback: formatYTick
+        callback: value => value.toLocaleString()
       }
     }];
   } else {
@@ -105,7 +102,7 @@ function chooseYScale(scale) {
         ticks: {
           suggestedMin: GRAPH_Y_MIN,
           suggestedMax: GRAPH_Y_MAX,
-          callback: formatYTick
+          callback: value => value.toLocaleString()
         }
       }
     ];
@@ -114,7 +111,6 @@ function chooseYScale(scale) {
   graph.update();
 }
 
-const datePad = padLeft.bind(null, '0', 2);
 let enrichedCollection = [];
 function choseState(state) {
   let stateEntry = enrichedCollection.filter(x => x.stateCode === state)[0] || enrichedCollection[0];
@@ -138,25 +134,30 @@ function choseState(state) {
   document.cookie = `lastStateCode=${stateCode}`;
 }
 
+// Listen for scale button events
 document.getElementById('scaleControl').addEventListener('change', (event) => {
   if (event.target.checked) {
     chooseYScale(event.target.value);
   }
 });
 
+// Listen for location button events
 document.getElementById('locationControl').addEventListener('change', (event) => {
   if (event.target.checked) {
     choseState(event.target.value);
   }
 });
 
+// Fetch the data and then render
 fetchData().then((data) => {
   enrichedCollection = data;
+
   const {
     lastStateCode = enrichedCollection[0].stateCode,
     lastYScale = 'linear'
   } = getCookies();
 
+  // Render location buttons
   const locationControlContainer = document.querySelector('#locationControl .controlContainer');
   locationControlContainer.innerHTML = '';
   enrichedCollection.forEach((element) => {
@@ -178,7 +179,18 @@ fetchData().then((data) => {
   chooseYScale(lastYScale);
   choseState(lastStateCode);
 
+  // Prepare all Australia data to render
+
   const australiaData = enrichedCollection.filter(item => item.stateCode === 'ALL')[0];
+
+  function renderTimeHTML(days) {
+    if (days >= 1) {
+      const daysRounded = Math.round(days);
+      return `${daysRounded}&nbsp;day${daysRounded === 1 ? '' : 's'}`;
+    }
+    const hoursRounded = Math.round(days * 24);
+    return `${hoursRounded}&nbsp;hour${hoursRounded === 1 ? '' : 's'}`;
+  }
 
   function renderTag(tagElement, modifiers, html) {
     tagElement.innerHTML = '';
@@ -194,12 +206,12 @@ fetchData().then((data) => {
     }, { html }));
   }
 
-  // Case doubling
+  // Render case doubling
   const doublingRate = calculateDoublingRate(australiaData);
   const previousDoublingRate = calculatePreviousDoublingRate(australiaData);
   const doublingRateDelta = doublingRate - previousDoublingRate;
   document.getElementById('doublingRateDisplay')
-    .innerHTML = formatTimeHTML(doublingRate);
+    .innerHTML = renderTimeHTML(doublingRate);
   renderTag(
     document.getElementById('doublingRateTag'),
     doublingRateDelta > 0
@@ -207,10 +219,10 @@ fetchData().then((data) => {
       : doublingRateDelta < 0
       ? ['negative', 'down']
       : [],
-    formatTimeHTML(Math.abs(doublingRateDelta)),
+    renderTimeHTML(Math.abs(doublingRateDelta)),
   );
 
-  // Easter prediction
+  // Render Easter prediction
   const easterNumber = estimateEasterNumber(australiaData);
   const previousEasterNumber = estimatePreviousEasterNumber(australiaData);
   const easterNumberDelta = easterNumber - previousEasterNumber;
@@ -225,6 +237,4 @@ fetchData().then((data) => {
       : [],
     Math.abs(easterNumberDelta).toLocaleString(),
   );
-
-
-}, 1000);
+});
