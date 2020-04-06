@@ -25,7 +25,7 @@ export function linest(options = {}, data) {
   const { period } = options;
   // https://en.wikipedia.org/wiki/Simple_linear_regression#Fitting_the_regression_line
   const xvec = data.map(c => c.x.getTime() / period);
-  const yvec = data.map(c => Math.log(c.y));
+  const yvec = data.map(c => c.y);
   const xavg = avg(xvec);
   const yavg = avg(yvec);
   const beta = xvec.reduce((sum, xi, i) => sum + (xi - xavg) * (yvec[i] - yavg), 0) /

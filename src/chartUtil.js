@@ -1,22 +1,20 @@
 import {
   normaliseData,
   filterAfterDate,
-  linest,
 } from './dataUtil';
 
 const MILLI_PER_DAY = 1000 * 86400;
-const linestDaily = data => linest({ period: MILLI_PER_DAY }, data);
 
-function generatePredictionData(coeff, startAestDate, endAestDate) {
+function generatePredictionData(fn, startAestDate, endAestDate) {
+  const data = [];
   const endDate = new Date(`${endAestDate}T00:00:00.000+10:00`);
   endDate.setHours(endDate.getHours() + 12);
 
-  const data = [];
   let date = new Date(`${startAestDate}T00:00:00.000+10:00`);
   while (date.getTime() < endDate.getTime()) {
     data.push({
       x: date,
-      y: Math.exp(coeff.beta * (date.getTime() / MILLI_PER_DAY) + coeff.alpha)
+      y: fn(date.getTime() / MILLI_PER_DAY),
     });
     date = new Date(date);
     date.setDate(date.getDate() + 1);
@@ -26,11 +24,10 @@ function generatePredictionData(coeff, startAestDate, endAestDate) {
 }
 
 export function buildDatasets(options = {}, data) {
-  const { predictStartDate, predictEndDate, label } = options;
+  const { predictStartDate, predictEndDate, fitter, label } = options;
   const processedData = normaliseData(data);
   const sampleData = filterAfterDate(predictStartDate, processedData);
-  const predictionCoefficients = linestDaily(sampleData);
-  const predictionData = generatePredictionData(predictionCoefficients, predictStartDate, predictEndDate);
+  const predictionData = generatePredictionData(fitter(sampleData), predictStartDate, predictEndDate);
 
   return [{
     label,

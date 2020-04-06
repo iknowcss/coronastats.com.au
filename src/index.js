@@ -1,6 +1,6 @@
 import { fetchData } from './data';
 import { createElement, getCookies, datePad } from './browserUtil';
-import { linestDaily, normaliseData, filterAfterDate, filterBeforeDate, xxx } from './dataUtil';
+import { linestDaily, normaliseData, filterAfterDate, filterBeforeDate, linest } from './dataUtil';
 import { buildDatasets } from './chartUtil';
 import './ga';
 import './index.scss';
@@ -111,6 +111,18 @@ function chooseYScale(scale) {
   graph.update();
 }
 
+const exponentialFitter = (sampleData) => {
+  const logYData = sampleData.map(({ x, y }) => ({ x, y: Math.log(y) }));
+  const { alpha, beta } = linestDaily(logYData);
+  return x => Math.exp(beta * x + alpha);
+};
+
+const logisticFitter = (sampleData) => {
+  const logYData = sampleData.map(({ x, y }) => ({ x, y: Math.log(y) }));
+  const { alpha, beta } = linestDaily(logYData);
+  return x => Math.exp(beta * x + alpha);
+};
+
 let enrichedCollection = [];
 function choseState(state) {
   let stateEntry = enrichedCollection.filter(x => x.stateCode === state)[0] || enrichedCollection[0];
@@ -127,7 +139,13 @@ function choseState(state) {
   document.querySelector(`#graphLocation${stateCode}`).checked = true;
   graph.data.datasets = buildDatasets({
     label: '# Confirmed cases',
-    predictStartDate: `${fiveDaysAgo.getFullYear()}-${datePad(fiveDaysAgo.getMonth() + 1)}-${datePad(fiveDaysAgo.getDate())}`,
+
+    // fitter: exponentialFitter,
+    // predictStartDate: `${fiveDaysAgo.getFullYear()}-${datePad(fiveDaysAgo.getMonth() + 1)}-${datePad(fiveDaysAgo.getDate())}`,
+
+    fitter: logisticFitter,
+    predictStartDate: '2020-03-01',
+
     predictEndDate,
   }, rawDataset);
   graph.update();
