@@ -57,23 +57,19 @@ const states = [
   },
 ];
 
-export const xxx = parts => new Date(`2020-${parts[0]}T${parts[1]}:00.000${parts[2]}`);
-
-export const normaliseData = data => data.map(parts => ({
-  x: xxx(parts),
+const normaliseData = data => data.map(parts => ({
+  x: new Date(`2020-${parts[0]}T${parts[1]}:00.000${parts[2]}`),
   y: parts[3],
 }));
 
-export const fetchData = () => {
-  return Promise.all(states.map(({
+export const fetchData = () =>
+  Promise.all(states.map(({
     fileSuffix,
     ...theRest
-  }) => {
-    return fetch(`/data/totalCaseCount_${fileSuffix}.json`)
-      .then(res => res.json())
-      .then(data => ({
-        dataset: normaliseData(data.raw),
-        ...theRest,
-      }));
-  }));
-};
+  }) => fetch(`/data/totalCaseCount_${fileSuffix}.json`)
+    .then(res => res.json())
+    .then(data => ({
+      dataset: normaliseData(data.raw),
+      ...theRest,
+    }))
+  ));

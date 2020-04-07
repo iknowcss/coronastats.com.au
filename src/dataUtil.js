@@ -2,13 +2,6 @@ import fminsearch from './util/fminsearch';
 
 window.fminsearch = fminsearch;
 
-export const xxx = parts => new Date(`2020-${parts[0]}T${parts[1]}:00.000${parts[2]}`);
-
-export const normaliseData = data => data.map(parts => ({
-  x: xxx(parts),
-  y: parts[3],
-}));
-
 export function filterAfterDate(aestDate, data) {
   const afterDate = aestDate instanceof Date
     ? aestDate

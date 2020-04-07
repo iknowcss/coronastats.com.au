@@ -1,7 +1,4 @@
-import {
-  normaliseData,
-  filterAfterDate,
-} from './dataUtil';
+import { filterAfterDate } from './dataUtil';
 
 const MILLI_PER_DAY = 1000 * 86400;
 
@@ -25,13 +22,12 @@ function generatePredictionData(fn, startAestDate, endAestDate) {
 
 export function buildDatasets(options = {}, data) {
   const { predictStartDate, predictEndDate, fitter, label } = options;
-  const processedData = normaliseData(data);
-  const sampleData = filterAfterDate(predictStartDate, processedData);
+  const sampleData = filterAfterDate(predictStartDate, data);
   const predictionData = generatePredictionData(fitter(sampleData), predictStartDate, predictEndDate);
 
   return [{
     label,
-    data: processedData,
+    data,
     backgroundColor: 'rgba(255,255,255,0)',
     borderColor: '#DD6F6F',
     pointBorderColor: '#DD6F6F',

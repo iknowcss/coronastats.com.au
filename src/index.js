@@ -1,6 +1,6 @@
 import { fetchData } from './data/data';
 import { createElement, getCookies, datePad } from './browserUtil';
-import { linestDaily, logisticEstDaily, normaliseData, filterAfterDate, filterBeforeDate, linest } from './dataUtil';
+import { linestDaily, logisticEstDaily, filterAfterDate, filterBeforeDate } from './dataUtil';
 import { buildDatasets } from './chartUtil';
 import './ga';
 import './index.scss';
@@ -17,12 +17,12 @@ const EASTER_DATE = new Date('2020-04-10T15:00:00.000+10:00');
 const logY = (normalData) => normalData.map(({ x, y }) => ({ x, y: Math.log(y) }));
 
 function getLinestSampleData(stateData) {
-  const normalData = logY(normaliseData(stateData.rawDataset));
+  const normalData = logY(stateData.dataset);
   return filterAfterDate(stateData.predictStartDate, normalData);
 }
 
 function getPreviousLinestSampleData(stateData) {
-  const normalData = logY(normaliseData(stateData.rawDataset));
+  const normalData = logY(stateData.dataset);
   const predictStartDate = new Date(`${stateData.predictStartDate}T00:00:00.000+10:00`);
   predictStartDate.setDate(predictStartDate.getDate() - 1);
   const predictEndDate = normalData[normalData.length - 1].x;
@@ -128,12 +128,12 @@ let enrichedCollection = [];
 function choseState(state) {
   let stateEntry = enrichedCollection.filter(x => x.stateCode === state)[0] || enrichedCollection[0];
 
-  const lastEntryDate = stateEntry.rawDataset[stateEntry.rawDataset.length - 1][0];
-  const fiveDaysAgo = new Date(`2020-${lastEntryDate}`);
+  const lastEntryDate = stateEntry.dataset[stateEntry.dataset.length - 1].x;
+  const fiveDaysAgo = new Date(lastEntryDate);
   fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
 
   const {
-    rawDataset,
+    dataset,
     predictEndDate = DEFAULT_PREDICT_END_DATE,
     stateCode
   } = stateEntry;
@@ -141,11 +141,9 @@ function choseState(state) {
   graph.data.datasets = buildDatasets({
     label: '# Confirmed cases',
     fitter: exponentialFitter,
-    // fitter: logisticFitter,
     predictStartDate: `${fiveDaysAgo.getFullYear()}-${datePad(fiveDaysAgo.getMonth() + 1)}-${datePad(fiveDaysAgo.getDate())}`,
-    // predictStartDate: '2020-03-08',
     predictEndDate,
-  }, rawDataset);
+  }, dataset);
   graph.update();
   document.cookie = `lastStateCode=${stateCode}`;
 }
