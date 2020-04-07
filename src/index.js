@@ -1,4 +1,4 @@
-import { fetchData } from './data';
+import { fetchData } from './data/data';
 import { createElement, getCookies, datePad } from './browserUtil';
 import { linestDaily, logisticEstDaily, normaliseData, filterAfterDate, filterBeforeDate, linest } from './dataUtil';
 import { buildDatasets } from './chartUtil';

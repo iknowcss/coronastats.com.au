@@ -1,20 +1,5 @@
 const DEFAULT_PREDICT_START_DATE = '2020-03-29';
 
-function all(promises) {
-  let chain = Promise.resolve();
-  let success = true;
-  const results = [];
-  promises.forEach((p, i) => chain = chain.then(() => {
-    return p
-      .then(result => results[i] = result)
-      .catch(error => {
-        results[i] = error;
-        success = false;
-      });
-  }));
-  return chain.then(() => success ? results : Promise.reject(results));
-}
-
 const states = [
   {
     fileSuffix: 'australia',
@@ -72,13 +57,23 @@ const states = [
   },
 ];
 
+export const xxx = parts => new Date(`2020-${parts[0]}T${parts[1]}:00.000${parts[2]}`);
+
+export const normaliseData = data => data.map(parts => ({
+  x: xxx(parts),
+  y: parts[3],
+}));
+
 export const fetchData = () => {
-  return all(states.map(({
+  return Promise.all(states.map(({
     fileSuffix,
     ...theRest
   }) => {
     return fetch(`/data/totalCaseCount_${fileSuffix}.json`)
       .then(res => res.json())
-      .then(data => ({ rawDataset: data.raw, ...theRest }));
+      .then(data => ({
+        dataset: normaliseData(data.raw),
+        ...theRest,
+      }));
   }));
 };
