@@ -1,5 +1,3 @@
-import { filterAfterDate } from './dataUtil';
-
 const MILLI_PER_DAY = 1000 * 86400;
 
 function generatePredictionData(valueFn, startDate, endDate) {
@@ -20,8 +18,8 @@ function generatePredictionData(valueFn, startDate, endDate) {
   return data;
 }
 
-export function buildDatasets({ fitter, endDate }, data) {
-  const { startDate, valueFn } = fitter(data);
+export function buildDatasets(fitter, data) {
+  const { startDate, endDate, valueFn } = fitter(data);
   const predictionData = generatePredictionData(valueFn, startDate, endDate);
 
   return [{

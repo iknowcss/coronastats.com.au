@@ -9,7 +9,8 @@ const MILLI_PER_DAY = 1000 * 86400;
 const DISPLAY_START_DATE = '2020-03-08';
 const GRAPH_Y_MIN = 5;
 const GRAPH_Y_MAX = 5000;
-const DEFAULT_PREDICT_END_DATE = new Date('2020-04-10T15:00:00.000+10:00');
+const DEFAULT_PREDICT_END_DATE = new Date('2020-04-20T15:00:00.000+10:00');
+const LOGISTIC_EST_START_DATE = new Date('2020-03-08T00:00:00.000+10:00');
 
 // Sample filtering
 
@@ -123,26 +124,33 @@ function chooseYScale(scale) {
 
 const exponentialFitter = (dataset) => {
   const startDate = nDaysBeforeLastEntry(5, dataset);
-  const filteredDataset = filterAfterDate(nDaysBeforeLastEntry(5, dataset), dataset);
+  const filteredDataset = filterAfterDate(startDate, dataset);
   const logYData = filteredDataset.map(({ x, y }) => ({ x, y: Math.log(y) }));
   const { alpha, beta } = linestDaily(logYData);
   return {
     startDate,
+    endDate: DEFAULT_PREDICT_END_DATE,
     valueFn: x => Math.exp(beta * x + alpha),
   };
 };
 
-// const logisticFitter = (options = {}, sampleData) => {
-//   const { L, k, x0 } = logisticEstDaily(sampleData);
-//   return x => L / (1 + Math.exp(-k * (x - x0)));
-// };
+const logisticFitter = (dataset) => {
+  const startDate = LOGISTIC_EST_START_DATE;
+  const filteredDataset = filterAfterDate(startDate, dataset);
+  const { L, k, x0 } = logisticEstDaily(filteredDataset);
+  return {
+    startDate,
+    endDate: DEFAULT_PREDICT_END_DATE,
+    valueFn: x => L / (1 + Math.exp(-k * (x - x0))),
+  };
+};
 
 let enrichedCollection = [];
 function choseState(state) {
   let stateEntry = enrichedCollection.filter(x => x.stateCode === state)[0] || enrichedCollection[0];
   const { dataset, stateCode } = stateEntry;
   document.querySelector(`#graphLocation${stateCode}`).checked = true;
-  graph.data.datasets = buildDatasets({ fitter: exponentialFitter, endDate: DEFAULT_PREDICT_END_DATE }, dataset);
+  graph.data.datasets = buildDatasets(exponentialFitter, dataset);
   graph.update();
   document.cookie = `lastStateCode=${stateCode}`;
 }
