@@ -2,16 +2,16 @@ import { filterAfterDate } from './dataUtil';
 
 const MILLI_PER_DAY = 1000 * 86400;
 
-function generatePredictionData(fn, startAestDate, endAestDate) {
+function generatePredictionData(valueFn, startDate, endDate) {
   const data = [];
-  const endDate = new Date(`${endAestDate}T00:00:00.000+10:00`);
   endDate.setHours(endDate.getHours() + 12);
 
-  let date = new Date(`${startAestDate}T00:00:00.000+10:00`);
-  while (date.getTime() < endDate.getTime()) {
+  let date = new Date(startDate);
+  const endTime = endDate.getTime();
+  while (date.getTime() < endTime) {
     data.push({
       x: date,
-      y: fn(date.getTime() / MILLI_PER_DAY),
+      y: valueFn(date.getTime() / MILLI_PER_DAY),
     });
     date = new Date(date);
     date.setDate(date.getDate() + 1);
@@ -20,13 +20,12 @@ function generatePredictionData(fn, startAestDate, endAestDate) {
   return data;
 }
 
-export function buildDatasets(options = {}, data) {
-  const { predictStartDate, predictEndDate, fitter, label } = options;
-  const sampleData = filterAfterDate(predictStartDate, data);
-  const predictionData = generatePredictionData(fitter(sampleData), predictStartDate, predictEndDate);
+export function buildDatasets({ fitter, endDate }, data) {
+  const { startDate, valueFn } = fitter(data);
+  const predictionData = generatePredictionData(valueFn, startDate, endDate);
 
   return [{
-    label,
+    label: '# cases',
     data,
     backgroundColor: 'rgba(255,255,255,0)',
     borderColor: '#DD6F6F',

@@ -7,18 +7,26 @@ import './index.scss';
 
 const MILLI_PER_DAY = 1000 * 86400;
 const DISPLAY_START_DATE = '2020-03-08';
-const DEFAULT_PREDICT_END_DATE = '2020-04-12';
 const GRAPH_Y_MIN = 5;
 const GRAPH_Y_MAX = 5000;
-const EASTER_DATE = new Date('2020-04-10T15:00:00.000+10:00');
+const DEFAULT_PREDICT_END_DATE = new Date('2020-04-10T15:00:00.000+10:00');
 
 // Sample filtering
+
+function nDaysBefore(n, date) {
+  const nDaysAgo = new Date(date);
+  nDaysAgo.setDate(nDaysAgo.getDate() - n);
+  return nDaysAgo;
+}
+
+function nDaysBeforeLastEntry(n, dataset) {
+  return nDaysBefore(n, dataset[dataset.length - 1].x);
+}
 
 const logY = (normalData) => normalData.map(({ x, y }) => ({ x, y: Math.log(y) }));
 
 function getLinestSampleData(stateData) {
-  const normalData = logY(stateData.dataset);
-  return filterAfterDate(stateData.predictStartDate, normalData);
+  return filterAfterDate(stateData.predictStartDate, logY(stateData.dataset));
 }
 
 function getPreviousLinestSampleData(stateData) {
@@ -49,13 +57,13 @@ function calculatePreviousDoublingRate(stateData) {
 function estimateEasterNumber(stateData) {
   const sampleData = getLinestSampleData(stateData);
   const { alpha, beta } = linestDaily(sampleData);
-  return Math.round(Math.exp(beta * (EASTER_DATE.getTime() / MILLI_PER_DAY) + alpha));
+  return Math.round(Math.exp(beta * (DEFAULT_PREDICT_END_DATE.getTime() / MILLI_PER_DAY) + alpha));
 }
 
 function estimatePreviousEasterNumber(stateData) {
   const sampleData = getPreviousLinestSampleData(stateData);
   const { alpha, beta } = linestDaily(sampleData);
-  return Math.round(Math.exp(beta * (EASTER_DATE.getTime() / MILLI_PER_DAY) + alpha));
+  return Math.round(Math.exp(beta * (DEFAULT_PREDICT_END_DATE.getTime() / MILLI_PER_DAY) + alpha));
 }
 
 // - Rendering ---------------------------------------------------------------------------------------------------------
@@ -113,37 +121,28 @@ function chooseYScale(scale) {
   graph.update();
 }
 
-const exponentialFitter = (sampleData) => {
-  const logYData = sampleData.map(({ x, y }) => ({ x, y: Math.log(y) }));
+const exponentialFitter = (dataset) => {
+  const startDate = nDaysBeforeLastEntry(5, dataset);
+  const filteredDataset = filterAfterDate(nDaysBeforeLastEntry(5, dataset), dataset);
+  const logYData = filteredDataset.map(({ x, y }) => ({ x, y: Math.log(y) }));
   const { alpha, beta } = linestDaily(logYData);
-  return x => Math.exp(beta * x + alpha);
+  return {
+    startDate,
+    valueFn: x => Math.exp(beta * x + alpha),
+  };
 };
 
-const logisticFitter = (sampleData) => {
-  const { L, k, x0 } = logisticEstDaily(sampleData);
-  return x => L / (1 + Math.exp(-k * (x - x0)));
-};
+// const logisticFitter = (options = {}, sampleData) => {
+//   const { L, k, x0 } = logisticEstDaily(sampleData);
+//   return x => L / (1 + Math.exp(-k * (x - x0)));
+// };
 
 let enrichedCollection = [];
 function choseState(state) {
   let stateEntry = enrichedCollection.filter(x => x.stateCode === state)[0] || enrichedCollection[0];
-
-  const lastEntryDate = stateEntry.dataset[stateEntry.dataset.length - 1].x;
-  const fiveDaysAgo = new Date(lastEntryDate);
-  fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
-
-  const {
-    dataset,
-    predictEndDate = DEFAULT_PREDICT_END_DATE,
-    stateCode
-  } = stateEntry;
+  const { dataset, stateCode } = stateEntry;
   document.querySelector(`#graphLocation${stateCode}`).checked = true;
-  graph.data.datasets = buildDatasets({
-    label: '# Confirmed cases',
-    fitter: exponentialFitter,
-    predictStartDate: `${fiveDaysAgo.getFullYear()}-${datePad(fiveDaysAgo.getMonth() + 1)}-${datePad(fiveDaysAgo.getDate())}`,
-    predictEndDate,
-  }, dataset);
+  graph.data.datasets = buildDatasets({ fitter: exponentialFitter, endDate: DEFAULT_PREDICT_END_DATE }, dataset);
   graph.update();
   document.cookie = `lastStateCode=${stateCode}`;
 }
