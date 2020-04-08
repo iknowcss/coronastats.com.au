@@ -126,11 +126,12 @@ const exponentialFitter = (dataset) => {
   const startDate = nDaysBeforeLastEntry(5, dataset);
   const filteredDataset = filterAfterDate(startDate, dataset);
   const logYData = filteredDataset.map(({ x, y }) => ({ x, y: Math.log(y) }));
-  const { alpha, beta } = linestDaily(logYData);
+  const coefficients = linestDaily(logYData);
   return {
     startDate,
     endDate: DEFAULT_PREDICT_END_DATE,
-    valueFn: x => Math.exp(beta * x + alpha),
+    coefficients,
+    valueFn: x => Math.exp(coefficients.beta * x + coefficients.alpha),
   };
 };
 
@@ -150,7 +151,7 @@ function choseState(state) {
   let stateEntry = enrichedCollection.filter(x => x.stateCode === state)[0] || enrichedCollection[0];
   const { dataset, stateCode } = stateEntry;
   document.querySelector(`#graphLocation${stateCode}`).checked = true;
-  graph.data.datasets = buildDatasets(exponentialFitter, dataset);
+  graph.data.datasets = buildDatasets({ exponentialFitter, logisticFitter } , dataset);
   graph.update();
   document.cookie = `lastStateCode=${stateCode}`;
 }

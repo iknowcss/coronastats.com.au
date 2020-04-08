@@ -107,8 +107,8 @@ a {
     }
   }
 
-  &ConfirmedCases, &Prediction {
-    width: 50%;
+  &ConfirmedCases, &Exponential, &Logistic {
+    width: 33%;
     display: inline-block;
 
     @media only screen and (min-width: $b-desktop-width) {
@@ -140,22 +140,29 @@ a {
     }
   }
 
-  &Prediction {
-    &Line {
-      display: flex;
-      width: 54px;
-      height: 21px;
-      align-items: center;
+  &ExponentialLine, &LogisticLine {
+    display: flex;
+    width: 54px;
+    height: 21px;
+    align-items: center;
 
-      span {
-        display: block;
-        background-color: $c-turquoise;
-        height: 2px;
-        width: 100%;
-        transform-origin: 50% 50%;
-        transform: rotateZ(-0.370891289rad);
-      }
+    span {
+      box-sizing: border-box;
+      display: block;
+      width: 100%;
+      transform-origin: 50% 50%;
+      transform: rotateZ(-0.370891289rad);
     }
+  }
+
+  &ExponentialLine span {
+    height: 2px;
+    border-top: 2px solid $c-turquoise;
+  }
+
+  &LogisticLine span {
+    height: 1px;
+    border-top: 1px dashed $c-cape-cod;
   }
 }
 

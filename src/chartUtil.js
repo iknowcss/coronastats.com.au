@@ -1,6 +1,6 @@
 const MILLI_PER_DAY = 1000 * 86400;
 
-function generatePredictionData(valueFn, startDate, endDate) {
+function generatePredictionData({ valueFn, startDate, endDate }) {
   const data = [];
   endDate.setHours(endDate.getHours() + 12);
 
@@ -18,10 +18,9 @@ function generatePredictionData(valueFn, startDate, endDate) {
   return data;
 }
 
-export function buildDatasets(fitter, data) {
-  const { startDate, endDate, valueFn } = fitter(data);
-  const predictionData = generatePredictionData(valueFn, startDate, endDate);
+const avg = set =>  set.reduce((sum, n) => sum + n, 0) / set.length;
 
+export function buildDatasets({ exponentialFitter, logisticFitter } = {}, data) {
   return [{
     label: '# cases',
     data,
@@ -35,10 +34,19 @@ export function buildDatasets(fitter, data) {
     pointHitRadius: 5
   }, {
     label: 'Prediction',
-    data: predictionData,
+    data: generatePredictionData(exponentialFitter(data)),
     borderColor: '#27CFC5',
     backgroundColor: 'transparent',
     borderWidth: 2,
+    pointRadius: 0,
+    showLine: true
+  }, {
+    label: 'Prediction',
+    data: generatePredictionData(logisticFitter(data)),
+    borderColor: '#3B4144',
+    backgroundColor: 'transparent',
+    borderDash: [10, 5],
+    borderWidth: 1,
     pointRadius: 0,
     showLine: true
   }];

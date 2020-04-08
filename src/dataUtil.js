@@ -2,18 +2,16 @@ import fminsearch from './util/fminsearch';
 
 window.fminsearch = fminsearch;
 
-export function filterAfterDate(aestDate, data) {
-  const afterDate = aestDate instanceof Date
-    ? aestDate
-    : new Date(`${aestDate}T00:00:00.000+10:00`);
-  return data.filter(c => c.y > 0 && c.x.getTime() >= afterDate.getTime());
+export function filterAfterDate(date, data) {
+  return data.filter(c => c.y > 0 && c.x.getTime() >= date.getTime());
 }
 
-export function filterBeforeDate(aestDate, data) {
-  const afterDate = aestDate instanceof Date
-    ? aestDate
-    : new Date(`${aestDate}T00:00:00.000+10:00`);
-  return data.filter(c => c.y > 0 && c.x.getTime() < afterDate.getTime());
+export function filterBeforeDate(date, data) {
+  return data.filter(c => c.y > 0 && c.x.getTime() < date.getTime());
+}
+
+export function filterBetweenDates(startDate, endDate, data) {
+  return filterAfterDate(startDate, filterBeforeDate())
 }
 
 const avg = set =>  set.reduce((sum, n) => sum + n, 0) / set.length;
