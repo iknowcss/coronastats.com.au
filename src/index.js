@@ -1,6 +1,6 @@
 import { fetchData } from './data/data';
 import { createElement, getCookies, datePad } from './browserUtil';
-import { linestDaily, logisticEstDaily, filterAfterDate, filterBeforeDate } from './dataUtil';
+import { linestDaily, logisticEstDaily, filterAfterDate, filterBeforeDate, filterBetweenDates } from './dataUtil';
 import { buildDatasets } from './chartUtil';
 import './ga';
 import './index.scss';
@@ -27,16 +27,16 @@ function nDaysBeforeLastEntry(n, dataset) {
 const logY = (normalData) => normalData.map(({ x, y }) => ({ x, y: Math.log(y) }));
 
 function getLinestSampleData(stateData) {
-  return filterAfterDate(stateData.predictStartDate, logY(stateData.dataset));
+  return filterAfterDate(nDaysBeforeLastEntry(5, stateData.dataset), logY(stateData.dataset));
 }
 
 function getPreviousLinestSampleData(stateData) {
-  const normalData = logY(stateData.dataset);
-  const predictStartDate = new Date(`${stateData.predictStartDate}T00:00:00.000+10:00`);
-  predictStartDate.setDate(predictStartDate.getDate() - 1);
-  const predictEndDate = normalData[normalData.length - 1].x;
+  const logYData = logY(stateData.dataset);
+  const predictEndDate = new Date(logYData[logYData.length - 1].x);
   predictEndDate.setDate(predictEndDate.getDate() - 1);
-  return filterBeforeDate(predictEndDate, filterAfterDate(predictStartDate, normalData));
+  const predictStartDate = new Date(predictEndDate);
+  predictStartDate.setDate(predictStartDate.getDate() - 5);
+  return filterBetweenDates(predictStartDate, predictEndDate, logYData);
 }
 
 // Doubling rate
@@ -249,7 +249,7 @@ fetchData().then((data) => {
   const previousEasterNumber = estimatePreviousEasterNumber(australiaData);
   const easterNumberDelta = easterNumber - previousEasterNumber;
   document.getElementById('easterPredictionDisplay')
-    .innerText = easterNumber.toLocaleString();
+    .innerText = easterNumber.toLocaleString() + '*';
   renderTag(
     document.getElementById('easterPredictionTag'),
     easterNumberDelta > 0

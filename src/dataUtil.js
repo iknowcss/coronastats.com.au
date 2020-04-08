@@ -11,7 +11,7 @@ export function filterBeforeDate(date, data) {
 }
 
 export function filterBetweenDates(startDate, endDate, data) {
-  return filterAfterDate(startDate, filterBeforeDate())
+  return filterAfterDate(startDate, filterBeforeDate(endDate, data))
 }
 
 const avg = set =>  set.reduce((sum, n) => sum + n, 0) / set.length;
