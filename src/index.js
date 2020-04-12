@@ -55,16 +55,18 @@ function calculatePreviousDoublingRate(stateData) {
 
 // Easter number
 
-function estimateEasterNumber(stateData) {
+function estimateEndNumber(options = {}, stateData) {
+  const { endDate } = options;
   const sampleData = getLinestSampleData(stateData);
   const { alpha, beta } = linestDaily(sampleData);
-  return Math.round(Math.exp(beta * (DEFAULT_PREDICT_END_DATE.getTime() / MILLI_PER_DAY) + alpha));
+  return Math.round(Math.exp(beta * (endDate.getTime() / MILLI_PER_DAY) + alpha));
 }
 
-function estimatePreviousEasterNumber(stateData) {
+function estimatePreviousEndNumber(options = {}, stateData) {
+  const { endDate } = options;
   const sampleData = getPreviousLinestSampleData(stateData);
   const { alpha, beta } = linestDaily(sampleData);
-  return Math.round(Math.exp(beta * (DEFAULT_PREDICT_END_DATE.getTime() / MILLI_PER_DAY) + alpha));
+  return Math.round(Math.exp(beta * (endDate.getTime() / MILLI_PER_DAY) + alpha));
 }
 
 // - Rendering ---------------------------------------------------------------------------------------------------------
@@ -129,7 +131,6 @@ const exponentialFitter = (dataset) => {
   const coefficients = linestDaily(logYData);
   return {
     startDate,
-    endDate: DEFAULT_PREDICT_END_DATE,
     coefficients,
     valueFn: x => Math.exp(coefficients.beta * x + coefficients.alpha),
   };
@@ -141,38 +142,39 @@ const logisticFitter = (dataset) => {
   const { L, k, x0 } = logisticEstDaily(filteredDataset);
   return {
     startDate,
-    endDate: DEFAULT_PREDICT_END_DATE,
     valueFn: x => L / (1 + Math.exp(-k * (x - x0))),
   };
 };
 
 let enrichedCollection = [];
-function choseState(state) {
+function choseState({ endDate } = {}, state) {
   let stateEntry = enrichedCollection.filter(x => x.stateCode === state)[0] || enrichedCollection[0];
   const { dataset, stateCode } = stateEntry;
   document.querySelector(`#graphLocation${stateCode}`).checked = true;
-  graph.data.datasets = buildDatasets({ exponentialFitter, logisticFitter } , dataset);
+  graph.data.datasets = buildDatasets({ exponentialFitter, logisticFitter, endDate } , dataset);
   graph.update();
   document.cookie = `lastStateCode=${stateCode}`;
 }
 
-// Listen for scale button events
-document.getElementById('scaleControl').addEventListener('change', (event) => {
-  if (event.target.checked) {
-    chooseYScale(event.target.value);
-  }
-});
-
-// Listen for location button events
-document.getElementById('locationControl').addEventListener('change', (event) => {
-  if (event.target.checked) {
-    choseState(event.target.value);
-  }
-});
-
 // Fetch the data and then render
 fetchData().then((data) => {
   enrichedCollection = data;
+  const endDate = new Date(enrichedCollection[0].dataset[enrichedCollection[0].dataset.length - 1].x);
+  endDate.setDate(endDate.getDate() + 7);
+
+  // Listen for scale button events
+  document.getElementById('scaleControl').addEventListener('change', (event) => {
+    if (event.target.checked) {
+      chooseYScale(event.target.value);
+    }
+  });
+
+  // Listen for location button events
+  document.getElementById('locationControl').addEventListener('change', (event) => {
+    if (event.target.checked) {
+      choseState({ endDate }, event.target.value);
+    }
+  });
 
   const {
     lastStateCode = enrichedCollection[0].stateCode,
@@ -199,7 +201,7 @@ fetchData().then((data) => {
   });
 
   chooseYScale(lastYScale);
-  choseState(lastStateCode);
+  choseState({ endDate }, lastStateCode);
 
   // Prepare all Australia data to render
 
@@ -245,18 +247,34 @@ fetchData().then((data) => {
   );
 
   // Render Easter prediction
-  const easterNumber = estimateEasterNumber(australiaData);
-  const previousEasterNumber = estimatePreviousEasterNumber(australiaData);
-  const easterNumberDelta = easterNumber - previousEasterNumber;
+  const monthArray = [
+    'Jan', 'Feb', 'March', 'April',
+    'May', 'June', 'July', 'Aug',
+    'Sept', 'Oct', 'Nov', 'Dec',
+  ];
+  const formatDate = (d) => {
+    const date = d.getDate();
+    const th = date > 10 && date < 20 ? 'th'
+      : date % 10 === 1 ? 'st'
+      : date % 10 === 2 ? 'nd'
+      : date % 10 === 3 ? 'rd'
+      : 'th';
+    return `${date}${th} ${monthArray[d.getMonth()]}`
+  };
+  const endNumber = estimateEndNumber({ endDate }, australiaData);
+  const previousEasterNumber = estimatePreviousEndNumber({ endDate }, australiaData);
+  const endNumberDelta = endNumber - previousEasterNumber;
+  document.getElementById('overallStatsTitle')
+    .innerText = `Predicted total confirmed cases by ${formatDate(endDate)}`;
   document.getElementById('easterPredictionDisplay')
-    .innerText = easterNumber.toLocaleString() + '*';
+    .innerText = endNumber.toLocaleString() + '*';
   renderTag(
     document.getElementById('easterPredictionTag'),
-    easterNumberDelta > 0
+    endNumberDelta > 0
       ? ['negative', 'up']
-      : easterNumberDelta < 0
+      : endNumberDelta < 0
       ? ['positive', 'down']
       : [],
-    Math.abs(easterNumberDelta).toLocaleString(),
+    Math.abs(endNumberDelta).toLocaleString(),
   );
 });

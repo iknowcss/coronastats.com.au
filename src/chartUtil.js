@@ -20,7 +20,7 @@ function generatePredictionData({ valueFn, startDate, endDate }) {
 
 const avg = set =>  set.reduce((sum, n) => sum + n, 0) / set.length;
 
-export function buildDatasets({ exponentialFitter, logisticFitter } = {}, data) {
+export function buildDatasets({ exponentialFitter, logisticFitter, endDate } = {}, data) {
   return [{
     label: '# cases',
     data,
@@ -34,7 +34,7 @@ export function buildDatasets({ exponentialFitter, logisticFitter } = {}, data) 
     pointHitRadius: 5
   }, {
     label: 'Prediction',
-    data: generatePredictionData(exponentialFitter(data)),
+    data: generatePredictionData({ endDate, ...exponentialFitter(data) }),
     borderColor: '#27CFC5',
     backgroundColor: 'transparent',
     borderWidth: 2,
@@ -42,7 +42,7 @@ export function buildDatasets({ exponentialFitter, logisticFitter } = {}, data) 
     showLine: true
   }, {
     label: 'Prediction',
-    data: generatePredictionData(logisticFitter(data)),
+    data: generatePredictionData({ endDate, ...logisticFitter(data) }),
     borderColor: '#3B4144',
     backgroundColor: 'transparent',
     borderDash: [10, 5],
