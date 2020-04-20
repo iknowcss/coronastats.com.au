@@ -102,7 +102,7 @@ function chooseYScale(scale) {
       ticks: {
         autoSkip: true,
         suggestedMin: GRAPH_Y_MIN,
-        suggestedMax: GRAPH_Y_MAX,
+//        suggestedMax: GRAPH_Y_MAX,
         callback: value => value.toLocaleString()
       }
     }];
@@ -114,7 +114,7 @@ function chooseYScale(scale) {
         type: 'linear',
         ticks: {
           suggestedMin: GRAPH_Y_MIN,
-          suggestedMax: GRAPH_Y_MAX,
+//          suggestedMax: GRAPH_Y_MAX,
           callback: value => value.toLocaleString()
         }
       }
