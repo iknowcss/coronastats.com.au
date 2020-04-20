@@ -13,7 +13,8 @@ LOCATION_CODE_MAP = {
     'Tasmania': 'tas',
     'Victoria': 'vic',
     'Western Australia': 'wa',
-    'Total**': 'australia'
+    'Total**': 'australia',
+    'Total': 'australia',
 }
 MONTH_MAP = {
     'january': 1,
