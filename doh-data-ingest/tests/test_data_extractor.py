@@ -1,5 +1,7 @@
 from testfixtures import compare
-from doh_data_ingest.data_extractor import extract_from_html
+import json
+import pendulum
+from doh_data_ingest.data_extractor import extract_from_html, extract_from_hypercube
 
 
 class TestDataExtractor:
@@ -49,4 +51,21 @@ class TestDataExtractor:
             "vic": ("04-20", "06:00", "+10:00", 1328),
             "wa": ("04-20", "06:00", "+10:00", 545),
             "australia": ("04-20", "06:00", "+10:00", 6612)
+        })
+
+    def test_hypercube_extract(self):
+        page_file = open("tests/fixture/doh-hypercube-02-may.json", "r")
+        now = pendulum.parse('2020-05-02T13:31:00+10:00')
+        hypercube_data = json.loads(page_file.read())['result']
+        location_data_map = extract_from_hypercube(now, hypercube_data)
+        compare(location_data_map, {
+            "act": ("05-02", "13:31", "+10:00", 106),
+            "nsw": ("05-02", "13:31", "+10:00", 3031),
+            "nt": ("05-02", "13:31", "+10:00", 29),
+            "qld": ("05-02", "13:31", "+10:00", 1034),
+            "sa": ("05-02", "13:31", "+10:00", 438),
+            "tas": ("05-02", "13:31", "+10:00", 223),
+            "vic": ("05-02", "13:31", "+10:00", 1371),
+            "wa": ("05-02", "13:31", "+10:00", 551),
+            "australia": ("05-02", "13:31", "+10:00", 6783),
         })

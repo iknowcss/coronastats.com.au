@@ -1,6 +1,7 @@
 import sys
 import math
 import re
+from functools import reduce
 from bs4 import BeautifulSoup
 import pendulum
 
@@ -44,7 +45,13 @@ def extract_from_html(page_html):
     soup = BeautifulSoup(page_html, 'html.parser')
 
     print('Extract COVID-19 block')
-    covid_block = soup.find_all(about='/block/covid-19')[0]
+
+    block_extract = soup.find_all(about='/block/covid-19')
+    if len(block_extract) == 0:
+        print('Data is missing from html')
+        return None
+
+    covid_block = block_extract[0]
 
     print('Extract time')
     time_re = re.compile('([01]?[0-9]):([0-5][0-9])([ap]m)')
@@ -88,3 +95,19 @@ def extract_from_html(page_html):
         location_data_map[loc_code] = (date_string, time_string, timezone_string, count)
 
     return location_data_map
+
+def extract_from_hypercube(pendulum_datetime, data):
+    time = (
+        pendulum_datetime.format('MM-DD'),
+        pendulum_datetime.format('HH:mm'),
+        f'+{int(pendulum_datetime.offset / 3600)}:00'
+    )
+    def reducer(prev, a):
+        prev[a[0]] = time + (a[1],)
+        return prev
+    pages = data['qDataPages'][0]['value']
+    heading_matrix = pages[0]['qMatrix']
+    value_matrix = pages[1]['qMatrix']
+    data_list = [(element[0]['qText'].lower(), int(value_matrix[i][0]['qText'].replace(',', ''))) for i, element in enumerate(heading_matrix)]
+    return reduce(reducer, data_list, {})
+
