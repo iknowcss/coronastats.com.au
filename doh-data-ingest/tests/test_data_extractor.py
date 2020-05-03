@@ -56,7 +56,7 @@ class TestDataExtractor:
     def test_hypercube_extract(self):
         page_file = open("tests/fixture/doh-hypercube-02-may.json", "r")
         now = pendulum.parse('2020-05-02T13:31:00+10:00')
-        hypercube_data = json.loads(page_file.read())['result']
+        hypercube_data = json.loads(page_file.read())
         location_data_map = extract_from_hypercube(now, hypercube_data)
         compare(location_data_map, {
             "act": ("05-02", "13:31", "+10:00", 106),

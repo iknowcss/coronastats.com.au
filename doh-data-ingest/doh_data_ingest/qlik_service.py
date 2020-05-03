@@ -3,9 +3,9 @@ import ssl
 import json
 
 
-def fetch_hypercube_data(doc_id):
+def fetch_hypercube_data(wss_base_url, doc_id):
     ws = websocket.create_connection(
-        f"wss://covid19-data.health.gov.au/app/{doc_id}",
+        f"{wss_base_url}/{doc_id}",
         sslopt={"cert_reqs": ssl.CERT_NONE},
         header={
             'Host': 'covid19-data.health.gov.au',
@@ -53,7 +53,7 @@ def fetch_hypercube_data(doc_id):
                 ws.send('{"delta":true,"handle":2,"method":"GetHyperCubeData","params":["/qHyperCubeDef",[{"qTop":0,"qLeft":0,"qHeight":9,"qWidth":1},{"qTop":0,"qLeft":1,"qHeight":9,"qWidth":1},{"qTop":0,"qLeft":2,"qHeight":9,"qWidth":1}]],"id":14,"jsonrpc":"2.0"}')
             elif parsed.get('id') == 14:
                 ws.close()
-                return parsed
+                return parsed['result']
             result = ws.recv()
     finally:
         ws.close()
